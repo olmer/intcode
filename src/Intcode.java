@@ -122,7 +122,7 @@ class Program {
 abstract class Command {
     private final int modes;
 
-    private int[] params;
+    private final int[] params;
 
     public Command(int modes, int[] data, Pointer pointer) {
         this.modes = modes;
