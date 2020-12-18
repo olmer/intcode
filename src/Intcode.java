@@ -3,10 +3,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Intcode {
-    private static boolean DEBUG = false;
+    private static final boolean DEBUG = false;
+
+    private static final boolean RUN_MODE = false;
 
     public static void main(String[] args) {
-        Program program = new Program();
+        Program computer = new Program();
 
         var tests = new Test[]{
             new Test("Advent day 5 part 1", 1, 5182797, new int[]{3, 225, 1, 225, 6, 6, 1100, 1, 238, 225, 104, 0, 1101, 40, 27, 224, 101, -67, 224, 224, 4, 224, 1002, 223, 8, 223, 1001, 224, 2, 224, 1, 224, 223, 223, 1101, 33, 38, 225, 1102, 84, 60, 225, 1101, 65, 62, 225, 1002, 36, 13, 224, 1001, 224, -494, 224, 4, 224, 1002, 223, 8, 223, 1001, 224, 3, 224, 1, 223, 224, 223, 1102, 86, 5, 224, 101, -430, 224, 224, 4, 224, 1002, 223, 8, 223, 101, 6, 224, 224, 1, 223, 224, 223, 1102, 23, 50, 225, 1001, 44, 10, 224, 101, -72, 224, 224, 4, 224, 102, 8, 223, 223, 101, 1, 224, 224, 1, 224, 223, 223, 102, 47, 217, 224, 1001, 224, -2303, 224, 4, 224, 102, 8, 223, 223, 101, 2, 224, 224, 1, 223, 224, 223, 1102, 71, 84, 225, 101, 91, 40, 224, 1001, 224, -151, 224, 4, 224, 1002, 223, 8, 223, 1001, 224, 5, 224, 1, 223, 224, 223, 1101, 87, 91, 225, 1102, 71, 19, 225, 1, 92, 140, 224, 101, -134, 224, 224, 4, 224, 1002, 223, 8, 223, 101, 1, 224, 224, 1, 224, 223, 223, 2, 170, 165, 224, 1001, 224, -1653, 224, 4, 224, 1002, 223, 8, 223, 101, 5, 224, 224, 1, 223, 224, 223, 1101, 49, 32, 225, 4, 223, 99, 0, 0, 0, 677, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1105, 0, 99999, 1105, 227, 247, 1105, 1, 99999, 1005, 227, 99999, 1005, 0, 256, 1105, 1, 99999, 1106, 227, 99999, 1106, 0, 265, 1105, 1, 99999, 1006, 0, 99999, 1006, 227, 274, 1105, 1, 99999, 1105, 1, 280, 1105, 1, 99999, 1, 225, 225, 225, 1101, 294, 0, 0, 105, 1, 0, 1105, 1, 99999, 1106, 0, 300, 1105, 1, 99999, 1, 225, 225, 225, 1101, 314, 0, 0, 106, 0, 0, 1105, 1, 99999, 1107, 226, 677, 224, 1002, 223, 2, 223, 1006, 224, 329, 101, 1, 223, 223, 8, 226, 226, 224, 1002, 223, 2, 223, 1005, 224, 344, 101, 1, 223, 223, 1007, 677, 226, 224, 102, 2, 223, 223, 1005, 224, 359, 101, 1, 223, 223, 8, 226, 677, 224, 102, 2, 223, 223, 1005, 224, 374, 101, 1, 223, 223, 1107, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 389, 1001, 223, 1, 223, 108, 226, 677, 224, 102, 2, 223, 223, 1005, 224, 404, 1001, 223, 1, 223, 108, 677, 677, 224, 1002, 223, 2, 223, 1006, 224, 419, 101, 1, 223, 223, 107, 677, 677, 224, 102, 2, 223, 223, 1006, 224, 434, 101, 1, 223, 223, 108, 226, 226, 224, 1002, 223, 2, 223, 1006, 224, 449, 1001, 223, 1, 223, 8, 677, 226, 224, 1002, 223, 2, 223, 1005, 224, 464, 101, 1, 223, 223, 1108, 226, 677, 224, 1002, 223, 2, 223, 1006, 224, 479, 1001, 223, 1, 223, 1108, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 494, 101, 1, 223, 223, 7, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 509, 101, 1, 223, 223, 1007, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 524, 101, 1, 223, 223, 7, 677, 226, 224, 1002, 223, 2, 223, 1005, 224, 539, 101, 1, 223, 223, 1107, 677, 226, 224, 102, 2, 223, 223, 1006, 224, 554, 101, 1, 223, 223, 107, 226, 677, 224, 1002, 223, 2, 223, 1005, 224, 569, 101, 1, 223, 223, 107, 226, 226, 224, 1002, 223, 2, 223, 1005, 224, 584, 101, 1, 223, 223, 1108, 677, 226, 224, 102, 2, 223, 223, 1006, 224, 599, 1001, 223, 1, 223, 1008, 677, 677, 224, 102, 2, 223, 223, 1006, 224, 614, 101, 1, 223, 223, 7, 226, 677, 224, 102, 2, 223, 223, 1005, 224, 629, 101, 1, 223, 223, 1008, 226, 677, 224, 1002, 223, 2, 223, 1006, 224, 644, 101, 1, 223, 223, 1007, 226, 226, 224, 1002, 223, 2, 223, 1005, 224, 659, 1001, 223, 1, 223, 1008, 226, 226, 224, 102, 2, 223, 223, 1006, 224, 674, 1001, 223, 1, 223, 4, 223, 99, 226}),
@@ -50,36 +52,88 @@ public class Intcode {
             new Test("Comparator less than", 5, 999, new int[]{3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99})
         };
 
-        var succeeded = 0;
-        var failed = new ArrayList<String>();
 
-        for (var test : tests) {
-            var programResult = program.run(test.getProgram(), test.getInput(), DEBUG);
-            if (programResult == test.getExpectedOutput()) {
-                System.out.print(".");
-                succeeded++;
-            } else {
-                failed.add("FAILED! Input: " + test.getInput() + ",  Output: " + programResult + ", expected: " + test.getExpectedOutput() + " " + test
-                    .getName());
+        if (RUN_MODE == true) {
+            var program = new int[]{3, 26, 1001, 26, -4, 26, 3, 27, 1002, 27, 2, 27, 1, 27, 26,
+                27, 4, 27, 1001, 28, -1, 28, 1005, 28, 6, 99, 0, 0, 5};
+
+            var sequences = permute(new int[]{9, 8, 7, 6, 5});
+
+            long maxResult = Long.MIN_VALUE;
+
+            for (var sequence : sequences) {
+                var nextInput = 0;
+                for (var sequenceAmp : sequence) {
+                    nextInput = computer.run(program.clone(), new int[]{sequenceAmp, nextInput}, DEBUG);
+                }
+                maxResult = maxResult > nextInput ? maxResult : nextInput;
+            }
+
+            System.out.println(maxResult);
+        } else {
+            var succeeded = 0;
+            var failed = new ArrayList<String>();
+
+            for (var test : tests) {
+                var programResult = computer.run(test.getProgram(), new int[]{test.getInput()}, DEBUG);
+                if (programResult == test.getExpectedOutput()) {
+                    System.out.print(".");
+                    succeeded++;
+                } else {
+                    failed.add("FAILED! Input: " + test.getInput() + ",  Output: " + programResult + ", expected: " + test
+                        .getExpectedOutput() + " " + test
+                        .getName());
+                }
+            }
+
+            System.out.println("\nDone! [ " + succeeded + " / " + tests.length + " ] succeeded. Failed: " + failed.size());
+            for (var failedMessage : failed) {
+                System.out.println(failedMessage);
             }
         }
+    }
 
-        System.out.println("\nDone! [ " + succeeded + " / " + tests.length + " ] succeeded. Failed: " + failed.size());
-        for (var failedMessage : failed) {
-            System.out.println(failedMessage);
+    public static ArrayList<ArrayList<Integer>> permute(int[] num) {
+        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+
+        //start from an empty list
+        result.add(new ArrayList<>());
+
+        for (int i = 0; i < num.length; i++) {
+            //list of list in current iteration of the array num
+            ArrayList<ArrayList<Integer>> current = new ArrayList<>();
+
+            for (ArrayList<Integer> l : result) {
+                // # of locations to insert is largest index + 1
+                for (int j = 0; j < l.size() + 1; j++) {
+                    // + add num[i] to different locations
+                    l.add(j, num[i]);
+
+                    ArrayList<Integer> temp = new ArrayList<>(l);
+                    current.add(temp);
+
+                    //System.out.println(temp);
+
+                    // - remove num[i] add
+                    l.remove(j);
+                }
+            }
+
+            result = new ArrayList<>(current);
         }
+
+        return result;
     }
 }
 
 class Program {
-    public int run(int[] data, int input, boolean debug) {
+    public int run(int[] data, int[] inputs, boolean debug) {
         var programCodeAsMnemonics = new ArrayList<String>();
         data = data.clone();
 
         var pointer = new Pointer();
 
-        var io = new Io();
-        io.setValue(input);
+        var io = new Io(inputs);
 
         while (true) {
             if (pointer.getValue() >= data.length) {
@@ -99,7 +153,7 @@ class Program {
                     if (debug) {
                         printProgram(programCodeAsMnemonics);
                     }
-                    return io.getValue();
+                    return io.getOutput();
                 }
 
                 pointer.setValue(pointer.getValue() + command.getCommandSize());
@@ -230,7 +284,7 @@ class Input extends Command {
 
     @Override
     public int execute(int[] data, Pointer pointer, Io io) {
-        data[data[pointer.getValue() + 1]] = io.getValue();
+        data[data[pointer.getValue() + 1]] = io.nextInput();
         return 0;
     }
 }
@@ -254,7 +308,7 @@ class Output extends Command {
 
     @Override
     public int execute(int[] data, Pointer pointer, Io io) {
-        io.setValue(getParam(0));
+        io.setOutput(getParam(0));
         return 0;
     }
 }
@@ -418,14 +472,27 @@ class UnknownOpcode extends Exception {
 }
 
 class Io {
-    private int value = 0;
+    private int output = 0;
+    private final int[] inputs;
+    private int inputPointer = 0;
 
-    public int getValue() {
-        return value;
+    public Io(int[] inputs) {
+        this.inputs = inputs;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public int nextInput() {
+        if (inputPointer >= inputs.length) {
+            return 0;
+        }
+        return inputs[inputPointer++];
+    }
+
+    public int getOutput() {
+        return output;
+    }
+
+    public void setOutput(int value) {
+        this.output = value;
     }
 }
 
