@@ -1,26 +1,24 @@
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
+import java.util.stream.IntStream;
 
 public class Aoc2023 {
     public static void main(String[] args) {
         var moves = 10_000_000;
         var maxNo = 1_000_000;
 
-        var in2 = Arrays.stream("193467258".split("")).mapToLong(Long::valueOf).boxed().collect(Collectors.toList());
-        in2.addAll(LongStream.rangeClosed(10, maxNo)
+        var in2 = Arrays.stream("193467258".split("")).mapToInt(Integer::valueOf).boxed().collect(Collectors.toList());
+        in2.addAll(IntStream.rangeClosed(10, maxNo)
             .boxed().collect(Collectors.toList()));
 
-        Map<Long, El> cups = new HashMap<>();
+        El[] cups = new El[maxNo + 1];
 
         El prev = null;
         El first = null;
         El last = null;
         for (var t : in2) {
             var tt = new El(t);
-            cups.put(t, tt);
+            cups[t] = tt;
             if (prev != null) {
                 prev.setNext(tt);
                 tt.setPrev(prev);
@@ -52,7 +50,7 @@ public class Aoc2023 {
             a.setPrev(null);
             c.setNext(null);
 
-            var d = cups.get(getDestination(cur, maxNo, a, b, c));
+            var d = cups[getDestination(cur, maxNo, a, b, c)];
 
 //            var CUR_D = d.value();
 
@@ -64,12 +62,12 @@ public class Aoc2023 {
             cur = cur.next();
         }
 
-        var b = cups.get(1L);
+        var b = cups[1];
         System.out.println(b.next().value() * b.next().next().value());
     }
 
-    private static long getDestination(El cur, int maxNo, El a, El b, El c) {
-        var nextN = cur.value() - 1;
+    private static int getDestination(El cur, int maxNo, El a, El b, El c) {
+        var nextN = (int)(cur.value() - 1);
         while (true) {
             if (nextN <= 0) {
                 nextN = maxNo;
