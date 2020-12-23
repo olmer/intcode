@@ -40,10 +40,6 @@ public class Aoc2023 {
             var b = a.next();
             var c = b.next();
 
-//            var CUR_STATE = print(cur);
-//            var CUR_STATE_EL = cur.value();
-//            var CUR_STATE_ABC = String.valueOf(a.value()) + b.value() + c.value();
-
             a.prev().setNext(c.next());
             c.next().setPrev(a.prev());
 
@@ -51,8 +47,6 @@ public class Aoc2023 {
             c.setNext(null);
 
             var d = cups[getDestination(cur, maxNo, a, b, c)];
-
-//            var CUR_D = d.value();
 
             d.next().setPrev(c);
             c.setNext(d.next());
@@ -67,7 +61,7 @@ public class Aoc2023 {
     }
 
     private static int getDestination(El cur, int maxNo, El a, El b, El c) {
-        var nextN = (int)(cur.value() - 1);
+        var nextN = (int) (cur.value() - 1);
         while (true) {
             if (nextN <= 0) {
                 nextN = maxNo;
@@ -80,28 +74,12 @@ public class Aoc2023 {
         }
     }
 
-    private static String print(El e) {
-        var r = new StringBuilder();
-        var c = e;
-        do {
-            r.append(c.value()).append(", ");
-            c = c.next();
-        } while (!c.equals(e));
-        return r.toString();
-    }
-
     static class El {
         private El next;
         private El prev;
-        private long value;
+        private final long value;
 
         public El(long value) {
-            this.value = value;
-        }
-
-        public El(El next, El prev, long value) {
-            this.next = next;
-            this.prev = prev;
             this.value = value;
         }
 
