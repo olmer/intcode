@@ -1,16 +1,29 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Intcode {
-    private static final boolean DEBUG = false;
+    private static final Map<Integer, Class<? extends Command>> opcodes = new HashMap<>() {{
+        put(1, Add.class);
+        put(2, Multiply.class);
+        put(3, Input.class);
+        put(4, Output.class);
+        put(5, JumpIfTrue.class);
+        put(6, JumpIfFalse.class);
+        put(7, LessThan.class);
+        put(8, Equals.class);
+        put(99, Halt.class);
+    }};
 
+    private static final boolean DEBUG = false;
     private static final boolean RUN_MODE = false;
 
     public static void main(String[] args) {
         Program computer = new Program();
 
-        if (RUN_MODE == true) {
+        if (RUN_MODE) {
             var program = new int[]{3, 26, 1001, 26, -4, 26, 3, 27, 1002, 27, 2, 27, 1, 27, 26,
                 27, 4, 27, 1001, 28, -1, 28, 1005, 28, 6, 99, 0, 0, 5};
 
@@ -34,7 +47,8 @@ public class Intcode {
 
     static class Program {
         public int run(int[] data, int[] inputs, boolean debug) {
-            var programCodeAsMnemonics = new ArrayList<String>();
+            if (debug) Disassembler.printProgram(data);
+
             data = data.clone();
 
             var pointer = new Pointer();
@@ -50,20 +64,20 @@ public class Intcode {
                 var opcode = data[pointer.getValue()] % 100;
                 int modes = data[pointer.getValue()] / 100;
 
+                if (debug) {
+                    System.out.println("\n\n\nstep " + pointer.getValue());
+                    Disassembler.printProgram(data);
+                }
+
                 try {
                     Command command = CommandFactory.create(opcode, modes, data, pointer);
 
-                    programCodeAsMnemonics.add(command.getName() + " (" + modes + ") " + Arrays.toString(command.getParams()));
-
                     if (command.execute(data, pointer, io) == -1) {
-                        if (debug) {
-                            printProgram(programCodeAsMnemonics);
-                        }
                         return io.getOutput();
                     }
 
                     pointer.setValue(pointer.getValue() + command.getCommandSize());
-                } catch (UnknownOpcode e) {
+                } catch (ReflectiveOperationException e) {
                     System.out.println(e.getMessage() + " pointer: " + pointer.getValue());
                     break;
                 }
@@ -83,6 +97,11 @@ public class Intcode {
         private final int modes;
 
         private final int[] params;
+
+        public Command() {
+            this.modes = 0;
+            this.params = new int[]{};
+        }
 
         public Command(int modes, int[] data, Pointer pointer) {
             this.modes = modes;
@@ -120,7 +139,9 @@ public class Intcode {
     }
 
     static class Add extends Command {
-        public static final int OPCODE = 1;
+        public Add() {
+            super();
+        }
 
         public Add(int modes, int[] data, Pointer pointer) {
             super(modes, data, pointer);
@@ -146,7 +167,9 @@ public class Intcode {
     }
 
     static class Multiply extends Command {
-        public static final int OPCODE = 2;
+        public Multiply() {
+            super();
+        }
 
         public Multiply(int modes, int[] data, Pointer pointer) {
             super(modes, data, pointer);
@@ -172,7 +195,9 @@ public class Intcode {
     }
 
     static class Input extends Command {
-        public static final int OPCODE = 3;
+        public Input() {
+            super();
+        }
 
         public Input(int modes, int[] data, Pointer pointer) {
             super(modes, data, pointer);
@@ -196,7 +221,9 @@ public class Intcode {
     }
 
     static class Output extends Command {
-        public static final int OPCODE = 4;
+        public Output() {
+            super();
+        }
 
         public Output(int modes, int[] data, Pointer pointer) {
             super(modes, data, pointer);
@@ -220,7 +247,9 @@ public class Intcode {
     }
 
     static class JumpIfTrue extends Command {
-        public static final int OPCODE = 5;
+        public JumpIfTrue() {
+            super();
+        }
 
         public JumpIfTrue(int modes, int[] data, Pointer pointer) {
             super(modes, data, pointer);
@@ -246,7 +275,9 @@ public class Intcode {
     }
 
     static class JumpIfFalse extends Command {
-        public static final int OPCODE = 6;
+        public JumpIfFalse() {
+            super();
+        }
 
         public JumpIfFalse(int modes, int[] data, Pointer pointer) {
             super(modes, data, pointer);
@@ -272,7 +303,9 @@ public class Intcode {
     }
 
     static class LessThan extends Command {
-        public static final int OPCODE = 7;
+        public LessThan() {
+            super();
+        }
 
         public LessThan(int modes, int[] data, Pointer pointer) {
             super(modes, data, pointer);
@@ -297,7 +330,9 @@ public class Intcode {
     }
 
     static class Equals extends Command {
-        public static final int OPCODE = 8;
+        public Equals() {
+            super();
+        }
 
         public Equals(int modes, int[] data, Pointer pointer) {
             super(modes, data, pointer);
@@ -322,7 +357,9 @@ public class Intcode {
     }
 
     static class Halt extends Command {
-        public static final int OPCODE = 99;
+        public Halt() {
+            super();
+        }
 
         public Halt(int modes, int[] data, Pointer pointer) {
             super(modes, data, pointer);
@@ -345,29 +382,12 @@ public class Intcode {
     }
 
     static class CommandFactory {
-        public static Command create(int opcode, int modes, int[] data, Pointer pointer) throws UnknownOpcode {
-            switch (opcode) {
-                case Add.OPCODE:
-                    return new Add(modes, data, pointer);
-                case Multiply.OPCODE:
-                    return new Multiply(modes, data, pointer);
-                case Input.OPCODE:
-                    return new Input(modes, data, pointer);
-                case Output.OPCODE:
-                    return new Output(modes, data, pointer);
-                case JumpIfFalse.OPCODE:
-                    return new JumpIfFalse(modes, data, pointer);
-                case JumpIfTrue.OPCODE:
-                    return new JumpIfTrue(modes, data, pointer);
-                case LessThan.OPCODE:
-                    return new LessThan(modes, data, pointer);
-                case Equals.OPCODE:
-                    return new Equals(modes, data, pointer);
-                case Halt.OPCODE:
-                    return new Halt(modes, data, pointer);
-                default:
-                    throw new UnknownOpcode("Unkown opcode: " + opcode);
-            }
+        public static Command create(int opcode, int modes, int[] data, Pointer pointer)
+            throws ReflectiveOperationException {
+
+            return (Command) Class.forName(opcodes.get(opcode).getName()).getConstructor(
+                int.class, int[].class, Pointer.class
+            ).newInstance(modes, data, pointer);
         }
     }
 
@@ -545,6 +565,50 @@ public class Intcode {
             }
 
             return result;
+        }
+    }
+
+    static class Disassembler {
+        public static void printProgram(int[] program) {
+            System.out.println("========================");
+            for (var i = 0; i < program.length; ) {
+                var opcode = program[i] % 100;
+                int modes = program[i] / 100;
+
+                var s = new StringBuilder();
+
+                try {
+                    var c = createCommand(opcode);
+                    s.append(i).append(": ");
+                    s.append(c.getName()).append(" ");
+
+                    for (var j = 1; j <= c.getParamsCount(); j++) {
+                        if (modes % (int) Math.pow(10, j + 1) / (int) Math.pow(10, j) == 1) {
+                            s.append("&");
+                        }
+                        if (program.length <= i + j) {
+                            break;
+                        }
+                        s.append(program[i + j]).append(" ");
+                    }
+
+                    i += c.getCommandSize();
+                } catch (ReflectiveOperationException e) {
+                    s.append(i).append(": ").append(program[i]);
+                    i++;
+                }
+
+                System.out.println(s.toString());
+            }
+        }
+
+        private static Command createCommand(int opcode)
+            throws ReflectiveOperationException {
+            var t = opcodes.get(opcode);
+            if (t == null) {
+                throw new ReflectiveOperationException();
+            }
+            return (Command) Class.forName(t.getName()).getConstructor().newInstance();
         }
     }
 }
