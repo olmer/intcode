@@ -17,13 +17,14 @@ public class Intcode {
         put(99, Halt.class);
     }};
 
-    private static final boolean DEBUG = false;
-    private static final boolean RUN_MODE = false;
+    private static final byte DEBUG_MODE = 1;
+    private static final boolean LIVE_MODE = true;
 
     public static void main(String[] args) {
         Program computer = new Program();
+        var da = new Disassembler(DEBUG_MODE);
 
-        if (RUN_MODE) {
+        if (LIVE_MODE) {
             var program = new int[]{3, 26, 1001, 26, -4, 26, 3, 27, 1002, 27, 2, 27, 1, 27, 26,
                 27, 4, 27, 1001, 28, -1, 28, 1005, 28, 6, 99, 0, 0, 5};
 
@@ -34,20 +35,20 @@ public class Intcode {
             for (var sequence : sequences) {
                 var nextInput = 0;
                 for (var sequenceAmp : sequence) {
-                    nextInput = computer.run(program.clone(), new int[]{sequenceAmp, nextInput}, DEBUG);
+                    nextInput = computer.run(program.clone(), new int[]{sequenceAmp, nextInput}, da);
                 }
                 maxResult = maxResult > nextInput ? maxResult : nextInput;
             }
 
             System.out.println(maxResult);
         } else {
-            TestRunner.runTests(computer, DEBUG);
+            TestRunner.runTests(computer, da);
         }
     }
 
     static class Program {
-        public int run(int[] data, int[] inputs, boolean debug) {
-            if (debug) Disassembler.printProgram(data);
+        public int run(int[] data, int[] inputs, Disassembler da) {
+            da.printProgram(data, 1);
 
             data = data.clone();
 
@@ -56,18 +57,10 @@ public class Intcode {
             var io = new Io(inputs);
 
             while (true) {
-                if (pointer.getValue() >= data.length) {
-                    System.out.println("out of bounds");
-                    return -1;
-                }
-
                 var opcode = data[pointer.getValue()] % 100;
                 int modes = data[pointer.getValue()] / 100;
 
-                if (debug) {
-                    System.out.println("\n\n\nstep " + pointer.getValue());
-                    Disassembler.printProgram(data);
-                }
+                da.printProgramWithSteps(data, pointer, 2);
 
                 try {
                     Command command = CommandFactory.create(opcode, modes, data, pointer);
@@ -108,9 +101,9 @@ public class Intcode {
             this.params = new int[getParamsCount()];
             for (var i = 0; i < getParamsCount(); i++) {
                 if (getModes() % (int) Math.pow(10, i + 1) / (int) Math.pow(10, i) == 1) {
-                    this.params[i] = data[pointer.getValue() + 1 + i];
+                    this.params[i] = data[pointer.getValue() + i + 1];
                 } else {
-                    this.params[i] = data[data[pointer.getValue() + 1 + i]];
+                    this.params[i] = data[data[pointer.getValue() + i + 1]];
                 }
             }
         }
@@ -469,7 +462,7 @@ public class Intcode {
     }
 
     static class TestRunner {
-        public static void runTests(Program computer, boolean DEBUG) {
+        public static void runTests(Program computer, Disassembler da) {
             var tests = new Test[]{
                 new Test("Advent day 5 part 1", 1, 5182797, new int[]{3, 225, 1, 225, 6, 6, 1100, 1, 238, 225, 104, 0, 1101, 40, 27, 224, 101, -67, 224, 224, 4, 224, 1002, 223, 8, 223, 1001, 224, 2, 224, 1, 224, 223, 223, 1101, 33, 38, 225, 1102, 84, 60, 225, 1101, 65, 62, 225, 1002, 36, 13, 224, 1001, 224, -494, 224, 4, 224, 1002, 223, 8, 223, 1001, 224, 3, 224, 1, 223, 224, 223, 1102, 86, 5, 224, 101, -430, 224, 224, 4, 224, 1002, 223, 8, 223, 101, 6, 224, 224, 1, 223, 224, 223, 1102, 23, 50, 225, 1001, 44, 10, 224, 101, -72, 224, 224, 4, 224, 102, 8, 223, 223, 101, 1, 224, 224, 1, 224, 223, 223, 102, 47, 217, 224, 1001, 224, -2303, 224, 4, 224, 102, 8, 223, 223, 101, 2, 224, 224, 1, 223, 224, 223, 1102, 71, 84, 225, 101, 91, 40, 224, 1001, 224, -151, 224, 4, 224, 1002, 223, 8, 223, 1001, 224, 5, 224, 1, 223, 224, 223, 1101, 87, 91, 225, 1102, 71, 19, 225, 1, 92, 140, 224, 101, -134, 224, 224, 4, 224, 1002, 223, 8, 223, 101, 1, 224, 224, 1, 224, 223, 223, 2, 170, 165, 224, 1001, 224, -1653, 224, 4, 224, 1002, 223, 8, 223, 101, 5, 224, 224, 1, 223, 224, 223, 1101, 49, 32, 225, 4, 223, 99, 0, 0, 0, 677, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1105, 0, 99999, 1105, 227, 247, 1105, 1, 99999, 1005, 227, 99999, 1005, 0, 256, 1105, 1, 99999, 1106, 227, 99999, 1106, 0, 265, 1105, 1, 99999, 1006, 0, 99999, 1006, 227, 274, 1105, 1, 99999, 1105, 1, 280, 1105, 1, 99999, 1, 225, 225, 225, 1101, 294, 0, 0, 105, 1, 0, 1105, 1, 99999, 1106, 0, 300, 1105, 1, 99999, 1, 225, 225, 225, 1101, 314, 0, 0, 106, 0, 0, 1105, 1, 99999, 1107, 226, 677, 224, 1002, 223, 2, 223, 1006, 224, 329, 101, 1, 223, 223, 8, 226, 226, 224, 1002, 223, 2, 223, 1005, 224, 344, 101, 1, 223, 223, 1007, 677, 226, 224, 102, 2, 223, 223, 1005, 224, 359, 101, 1, 223, 223, 8, 226, 677, 224, 102, 2, 223, 223, 1005, 224, 374, 101, 1, 223, 223, 1107, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 389, 1001, 223, 1, 223, 108, 226, 677, 224, 102, 2, 223, 223, 1005, 224, 404, 1001, 223, 1, 223, 108, 677, 677, 224, 1002, 223, 2, 223, 1006, 224, 419, 101, 1, 223, 223, 107, 677, 677, 224, 102, 2, 223, 223, 1006, 224, 434, 101, 1, 223, 223, 108, 226, 226, 224, 1002, 223, 2, 223, 1006, 224, 449, 1001, 223, 1, 223, 8, 677, 226, 224, 1002, 223, 2, 223, 1005, 224, 464, 101, 1, 223, 223, 1108, 226, 677, 224, 1002, 223, 2, 223, 1006, 224, 479, 1001, 223, 1, 223, 1108, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 494, 101, 1, 223, 223, 7, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 509, 101, 1, 223, 223, 1007, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 524, 101, 1, 223, 223, 7, 677, 226, 224, 1002, 223, 2, 223, 1005, 224, 539, 101, 1, 223, 223, 1107, 677, 226, 224, 102, 2, 223, 223, 1006, 224, 554, 101, 1, 223, 223, 107, 226, 677, 224, 1002, 223, 2, 223, 1005, 224, 569, 101, 1, 223, 223, 107, 226, 226, 224, 1002, 223, 2, 223, 1005, 224, 584, 101, 1, 223, 223, 1108, 677, 226, 224, 102, 2, 223, 223, 1006, 224, 599, 1001, 223, 1, 223, 1008, 677, 677, 224, 102, 2, 223, 223, 1006, 224, 614, 101, 1, 223, 223, 7, 226, 677, 224, 102, 2, 223, 223, 1005, 224, 629, 101, 1, 223, 223, 1008, 226, 677, 224, 1002, 223, 2, 223, 1006, 224, 644, 101, 1, 223, 223, 1007, 226, 226, 224, 1002, 223, 2, 223, 1005, 224, 659, 1001, 223, 1, 223, 1008, 226, 226, 224, 102, 2, 223, 223, 1006, 224, 674, 1001, 223, 1, 223, 4, 223, 99, 226}),
                 new Test("Advent day 5 part 2", 5, 12077198, new int[]{3, 225, 1, 225, 6, 6, 1100, 1, 238, 225, 104, 0, 1101, 40, 27, 224, 101, -67, 224, 224, 4, 224, 1002, 223, 8, 223, 1001, 224, 2, 224, 1, 224, 223, 223, 1101, 33, 38, 225, 1102, 84, 60, 225, 1101, 65, 62, 225, 1002, 36, 13, 224, 1001, 224, -494, 224, 4, 224, 1002, 223, 8, 223, 1001, 224, 3, 224, 1, 223, 224, 223, 1102, 86, 5, 224, 101, -430, 224, 224, 4, 224, 1002, 223, 8, 223, 101, 6, 224, 224, 1, 223, 224, 223, 1102, 23, 50, 225, 1001, 44, 10, 224, 101, -72, 224, 224, 4, 224, 102, 8, 223, 223, 101, 1, 224, 224, 1, 224, 223, 223, 102, 47, 217, 224, 1001, 224, -2303, 224, 4, 224, 102, 8, 223, 223, 101, 2, 224, 224, 1, 223, 224, 223, 1102, 71, 84, 225, 101, 91, 40, 224, 1001, 224, -151, 224, 4, 224, 1002, 223, 8, 223, 1001, 224, 5, 224, 1, 223, 224, 223, 1101, 87, 91, 225, 1102, 71, 19, 225, 1, 92, 140, 224, 101, -134, 224, 224, 4, 224, 1002, 223, 8, 223, 101, 1, 224, 224, 1, 224, 223, 223, 2, 170, 165, 224, 1001, 224, -1653, 224, 4, 224, 1002, 223, 8, 223, 101, 5, 224, 224, 1, 223, 224, 223, 1101, 49, 32, 225, 4, 223, 99, 0, 0, 0, 677, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1105, 0, 99999, 1105, 227, 247, 1105, 1, 99999, 1005, 227, 99999, 1005, 0, 256, 1105, 1, 99999, 1106, 227, 99999, 1106, 0, 265, 1105, 1, 99999, 1006, 0, 99999, 1006, 227, 274, 1105, 1, 99999, 1105, 1, 280, 1105, 1, 99999, 1, 225, 225, 225, 1101, 294, 0, 0, 105, 1, 0, 1105, 1, 99999, 1106, 0, 300, 1105, 1, 99999, 1, 225, 225, 225, 1101, 314, 0, 0, 106, 0, 0, 1105, 1, 99999, 1107, 226, 677, 224, 1002, 223, 2, 223, 1006, 224, 329, 101, 1, 223, 223, 8, 226, 226, 224, 1002, 223, 2, 223, 1005, 224, 344, 101, 1, 223, 223, 1007, 677, 226, 224, 102, 2, 223, 223, 1005, 224, 359, 101, 1, 223, 223, 8, 226, 677, 224, 102, 2, 223, 223, 1005, 224, 374, 101, 1, 223, 223, 1107, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 389, 1001, 223, 1, 223, 108, 226, 677, 224, 102, 2, 223, 223, 1005, 224, 404, 1001, 223, 1, 223, 108, 677, 677, 224, 1002, 223, 2, 223, 1006, 224, 419, 101, 1, 223, 223, 107, 677, 677, 224, 102, 2, 223, 223, 1006, 224, 434, 101, 1, 223, 223, 108, 226, 226, 224, 1002, 223, 2, 223, 1006, 224, 449, 1001, 223, 1, 223, 8, 677, 226, 224, 1002, 223, 2, 223, 1005, 224, 464, 101, 1, 223, 223, 1108, 226, 677, 224, 1002, 223, 2, 223, 1006, 224, 479, 1001, 223, 1, 223, 1108, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 494, 101, 1, 223, 223, 7, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 509, 101, 1, 223, 223, 1007, 677, 677, 224, 1002, 223, 2, 223, 1005, 224, 524, 101, 1, 223, 223, 7, 677, 226, 224, 1002, 223, 2, 223, 1005, 224, 539, 101, 1, 223, 223, 1107, 677, 226, 224, 102, 2, 223, 223, 1006, 224, 554, 101, 1, 223, 223, 107, 226, 677, 224, 1002, 223, 2, 223, 1005, 224, 569, 101, 1, 223, 223, 107, 226, 226, 224, 1002, 223, 2, 223, 1005, 224, 584, 101, 1, 223, 223, 1108, 677, 226, 224, 102, 2, 223, 223, 1006, 224, 599, 1001, 223, 1, 223, 1008, 677, 677, 224, 102, 2, 223, 223, 1006, 224, 614, 101, 1, 223, 223, 7, 226, 677, 224, 102, 2, 223, 223, 1005, 224, 629, 101, 1, 223, 223, 1008, 226, 677, 224, 1002, 223, 2, 223, 1006, 224, 644, 101, 1, 223, 223, 1007, 226, 226, 224, 1002, 223, 2, 223, 1005, 224, 659, 1001, 223, 1, 223, 1008, 226, 226, 224, 102, 2, 223, 223, 1006, 224, 674, 1001, 223, 1, 223, 4, 223, 99, 226}),
@@ -516,7 +509,7 @@ public class Intcode {
             var failed = new ArrayList<String>();
 
             for (var test : tests) {
-                var programResult = computer.run(test.getProgram(), new int[]{test.getInput()}, DEBUG);
+                var programResult = computer.run(test.getProgram(), new int[]{test.getInput()}, da);
                 if (programResult == test.getExpectedOutput()) {
                     System.out.print(".");
                     succeeded++;
@@ -569,7 +562,26 @@ public class Intcode {
     }
 
     static class Disassembler {
-        public static void printProgram(int[] program) {
+        private final int debugMode;
+
+        public Disassembler(int debugMode) {
+            this.debugMode = debugMode;
+        }
+
+        public void printProgramWithSteps(int[] program, Pointer pointer, int minDebugModeRequired) {
+            if (debugMode >= minDebugModeRequired) {
+                System.out.println("\n\n\nstep " + pointer.getValue());
+                printProgram(program);
+            }
+        }
+
+        public void printProgram(int[] program, int minDebugModeRequired) {
+            if (debugMode >= minDebugModeRequired) {
+                printProgram(program);
+            }
+        }
+
+        public void printProgram(int[] program) {
             System.out.println("========================");
             for (var i = 0; i < program.length; ) {
                 var opcode = program[i] % 100;
@@ -582,14 +594,14 @@ public class Intcode {
                     s.append(i).append(": ");
                     s.append(c.getName()).append(" ");
 
-                    for (var j = 1; j <= c.getParamsCount(); j++) {
-                        if (modes % (int) Math.pow(10, j + 1) / (int) Math.pow(10, j) == 1) {
+                    for (var j = 0; j < c.getParamsCount(); j++) {
+                        if (modes % (int) Math.pow(10, j + 1) / (int) Math.pow(10, j) == 0) {
                             s.append("&");
                         }
-                        if (program.length <= i + j) {
+                        if (program.length <= i + j + 1) {
                             break;
                         }
-                        s.append(program[i + j]).append(" ");
+                        s.append(program[i + j + 1]).append(" ");
                     }
 
                     i += c.getCommandSize();
@@ -602,7 +614,7 @@ public class Intcode {
             }
         }
 
-        private static Command createCommand(int opcode)
+        private Command createCommand(int opcode)
             throws ReflectiveOperationException {
             var t = opcodes.get(opcode);
             if (t == null) {
