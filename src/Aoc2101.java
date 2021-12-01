@@ -15,19 +15,19 @@ public class Aoc2101 {
             "263").split("\n")).map(Integer::valueOf).collect(Collectors.toList());
 
         var count = 0;
-        var fs = 0;
-        var ss = 0;
+        var firstSum = 0;
+        var secondSum = 0;
 
         for (var i = 0; i < input.size(); i++) {
-            ss += input.get(i);
+            secondSum += input.get(i);
             if (i < 2) continue;
             if (i == 2) {
-                fs = ss;
+                firstSum = secondSum;
                 continue;
             }
-            ss -= input.get(i - 3);
-            if (ss > fs) count++;
-            fs = ss;
+            secondSum -= input.get(i - 3);
+            if (secondSum > firstSum) count++;
+            firstSum = secondSum;
         }
 
         System.out.println(count);
