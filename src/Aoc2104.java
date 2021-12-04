@@ -6,18 +6,12 @@ import java.util.stream.Collectors;
 public class Aoc2104 {
     public static void main(String[] args) {
         var input = getInput();
-        var commands = Arrays.stream(input.get(0).split(",")).mapToInt(Integer::parseInt).boxed().collect(Collectors.toList());
+        var commands = getCommands(input);
         var usedCommands = new ArrayList<Integer>();
-
         var checkedNumbers = new int[input.size() - 1][2][5];
-
         var remainingCardIndicies = new ArrayList<Integer>();
-
         List<List<Integer>> cards = new ArrayList<>();
-        for (var i = 1; i < input.size(); i++) {
-            cards.add(Arrays.stream(input.get(i).split(" ")).filter(e -> !e.isEmpty()).mapToInt(Integer::parseInt).boxed().collect(Collectors.toList()));
-            remainingCardIndicies.add(i - 1);
-        }
+        initCards(input, cards, remainingCardIndicies);
 
         int winnerCardIdx = 0;
         int winnerNumber = 0;
@@ -64,6 +58,17 @@ public class Aoc2104 {
         }
 
         System.out.println(sum * winnerNumber);
+    }
+
+    private static void initCards(List<String> input, List<List<Integer>> cards, List<Integer> remainingCardIndicies) {
+        for (var i = 1; i < input.size(); i++) {
+            cards.add(Arrays.stream(input.get(i).split(" ")).filter(e -> !e.isEmpty()).mapToInt(Integer::parseInt).boxed().collect(Collectors.toList()));
+            remainingCardIndicies.add(i - 1);
+        }
+    }
+
+    private static List<Integer> getCommands(List<String> input) {
+        return Arrays.stream(input.get(0).split(",")).mapToInt(Integer::parseInt).boxed().collect(Collectors.toList());
     }
 
     private static List<String> getInput() {
