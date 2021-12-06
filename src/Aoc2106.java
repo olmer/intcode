@@ -12,17 +12,15 @@ public class Aoc2106 {
         }
 
         for (var day = 0; day < days; day++) {
-            var newfishes = fishes[0];
-            var resetfishes = fishes[0];
-            fishes[0] = fishes[1];
-            fishes[1] = fishes[2];
-            fishes[2] = fishes[3];
-            fishes[3] = fishes[4];
-            fishes[4] = fishes[5];
-            fishes[5] = fishes[6];
-            fishes[6] = fishes[7] + resetfishes;
-            fishes[7] = fishes[8];
-            fishes[8] = newfishes;
+            var bornFishes = 0L;
+            for (var i = 0; i < 8; i++) {
+                if (i == 0) {
+                    bornFishes = fishes[i];
+                }
+                fishes[i] = fishes[i + 1];
+            }
+            fishes[8] = bornFishes;
+            fishes[6] += bornFishes;
         }
         System.out.println(Arrays.stream(fishes).sum());
     }
