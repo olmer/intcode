@@ -11,7 +11,7 @@ public class Aoc2107
         var max = Arrays.stream(input).max().getAsInt();
 
         var minResult = Integer.MAX_VALUE;
-        for (var i = min; i <+ max; i++) {
+        for (var i = min; i <= max; i++) {
             final int to = i;
             var r = Arrays.stream(Arrays.stream(input).map(e -> {
                 if (to > e) {
