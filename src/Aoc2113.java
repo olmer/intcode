@@ -40,7 +40,7 @@ public class Aoc2113 {
         for (var i = 0; i < 6; i++) {
             var r = "";
             for (var j = 0; j < 50; j++) {
-                r += data[i][j] == 1 ? "#" : " ";
+                r += data[i][j] == 1 ? "█" : " ";
             }
             System.out.println(r);
         }
