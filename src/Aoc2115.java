@@ -1,34 +1,6 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
-
-class Node2115 implements Comparable<Node2115> {
-    private final int x;
-    private final int y;
-    private final int value;
-
-    public Node2115(int x, int y, int value) {
-        this.x = x;
-        this.y = y;
-        this.value = value;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public int compareTo(Node2115 node2115) {
-        return value > node2115.getValue() ? 1 : -1;
-    }
-}
 
 public class Aoc2115 {
     public static void main(String[] args) {
@@ -57,42 +29,43 @@ public class Aoc2115 {
         }
 
         var openNodes = new PriorityQueue<Node2115>();
-
         openNodes.add(new Node2115(0, 0, 0));
         visited[0][0] = true;
-
-        var r = 0;
-        var coords = new ArrayList<Integer>() {{
-            add(1);
-            add(0);
-            add(-1);
-            add(0);
-            add(0);
-            add(1);
-            add(0);
-            add(-1);
-        }};
+        var result = 0;
 
         while (openNodes.size() > 0) {
             var node = openNodes.poll();
-            r = node.getValue();
+            result = node.getValue();
             if (node.getX() == tagetx && node.getY() == targety) {
                 break;
             }
 
-            for (var i = 0; i < coords.size() - 1; i += 2) {
-                var ny = node.getY() + coords.get(i);
-                var nx = node.getX() + coords.get(i + 1);
-                if (ny < 0 || nx < 0 || ny >= data.length || nx >= data[ny].length || visited[ny][nx]) {
+            for (var neighbour : getNeighbours()) {
+                var nextNodeY = node.getY() + neighbour.get(0);
+                var nextNodeX = node.getX() + neighbour.get(1);
+                if (shouldSkipNeighbour(nextNodeY, nextNodeX, data, visited)) {
                     continue;
                 }
 
-                openNodes.add(new Node2115(nx, ny, r + data[ny][nx]));
-                visited[ny][nx] = true;
+                openNodes.add(new Node2115(nextNodeX, nextNodeY, result + data[nextNodeY][nextNodeX]));
+                visited[nextNodeY][nextNodeX] = true;
             }
         }
 
-        System.out.println(r);
+        System.out.println(result);
+    }
+
+    private static List<List<Integer>> getNeighbours() {
+        return new ArrayList<>() {{
+            add(new ArrayList<>(){{add(1);add(0);}});
+            add(new ArrayList<>(){{add(-1);add(0);}});
+            add(new ArrayList<>(){{add(0);add(1);}});
+            add(new ArrayList<>(){{add(0);add(-1);}});
+        }};
+    }
+
+    private static boolean shouldSkipNeighbour(int nextNodeY, int nextNodeX, int[][] data, boolean[][] visited) {
+        return nextNodeY < 0 || nextNodeX < 0 || nextNodeY >= data.length || nextNodeX >= data[nextNodeY].length || visited[nextNodeY][nextNodeX];
     }
 
     private static String[] getInput() {
@@ -196,5 +169,34 @@ public class Aoc2115 {
             "9362699299759899879589911968947655251988997896874791778876389919939496782959848979971163281597161779\n" +
             "1652179878596567755189593919723287659886989991199789326995581692999815373488857495418291969165215199\n" +
             "9788389477191759669998798979888832998683445278988415997594187969167388689899997659918914818788982937").split("\n");
+    }
+
+    static class Node2115 implements Comparable<Node2115> {
+        private final int x;
+        private final int y;
+        private final int value;
+
+        public Node2115(int x, int y, int value) {
+            this.x = x;
+            this.y = y;
+            this.value = value;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        @Override
+        public int compareTo(Node2115 node2115) {
+            return value > node2115.getValue() ? 1 : -1;
+        }
     }
 }
