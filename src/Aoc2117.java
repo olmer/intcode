@@ -54,11 +54,6 @@ public class Aoc2117 {
     }
 
     private static int[] getInput() {
-        var a = new int[4];
-        a[0] = 138;
-        a[1] = 184;
-        a[2] = -125;
-        a[3] = -71;
-        return a;
+        return new int[] {138, 184, -125, -71};
     }
 }
