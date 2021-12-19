@@ -65,39 +65,39 @@ public class Aoc2112 {
             "A-end\n" +
             "b-end").split("\n");
     }
-}
 
-class Node {
-    private final Node parent;
-    private final String value;
-    private final List<Node> children;
-    private final boolean traversable;
+    static class Node {
+        private final Node parent;
+        private final String value;
+        private final List<Node> children;
+        private final boolean traversable;
 
-    public Node(Node parent, String value) {
-        this.parent = parent;
-        this.value = value;
-        this.children = new ArrayList<>();
-        this.traversable = value.toUpperCase().equals(value);
-    }
+        public Node(Node parent, String value) {
+            this.parent = parent;
+            this.value = value;
+            this.children = new ArrayList<>();
+            this.traversable = value.toUpperCase().equals(value);
+        }
 
-    public Node getParent() {
-        return parent;
-    }
+        public Node getParent() {
+            return parent;
+        }
 
-    public String getValue() {
-        return value;
-    }
+        public String getValue() {
+            return value;
+        }
 
-    public void addChild(Node node) {
-        if (children.contains(node)) return;
-        children.add(node);
-    }
+        public void addChild(Node node) {
+            if (children.contains(node)) return;
+            children.add(node);
+        }
 
-    public List<Node> getChildren() {
-        return children;
-    }
+        public List<Node> getChildren() {
+            return children;
+        }
 
-    public boolean isTraversable() {
-        return traversable;
+        public boolean isTraversable() {
+            return traversable;
+        }
     }
 }
