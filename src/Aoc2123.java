@@ -2,16 +2,22 @@ import javafx.util.Pair;
 import java.util.*;
 
 public class Aoc2123 {
+    static final Map<Character, Integer> costMap = new HashMap<>() {{
+        put('A', 1);
+        put('B', 10);
+        put('C', 100);
+        put('D', 1000);
+    }};
+
     static class Node {
         static final boolean ROOM = true;
-        static final boolean SPACE = false;
+        static final boolean HALL = false;
 
         final boolean type;
         final boolean canStop;
         final String name;
-        char content;
         final List<Node> children = new ArrayList<>();
-        final List<Pair<Integer, Node>> distances = new ArrayList<>();
+        final List<String> destinations = new ArrayList<>();
 
         Node(boolean type, String name, boolean canStop) {
             this.type = type;
@@ -22,9 +28,10 @@ public class Aoc2123 {
         @Override
         public String toString() {
             return "{" +
-                "type=" + type +
-                ", name='" + name + '\'' +
-                ", content=" + content +
+                "name='" + name + '\'' +
+                ", type=" + (type ? "room" : "hall") +
+                ", canStop=" + canStop +
+                ", children=" + children.size() +
                 '}';
         }
     }
@@ -40,21 +47,14 @@ public class Aoc2123 {
 
          */
 
-        var costMap = new HashMap<Character, Integer>(){{
-            put('A', 1);
-            put('B', 10);
-            put('C', 100);
-            put('D', 1000);
-        }};
-
         var allNodes = new ArrayList<Node>();
-        var root = new Node(Node.SPACE, ".0", true);
+        var root = new Node(Node.HALL, ".0", true);
         allNodes.add(root);
         var names = new String[]{"A", "B", "C", "D"};
         var prevNode = root;
         for (var i = 1; i <= 10; i++) {
             var canStop = i == 10 || i % 2 == 1;
-            var newNode = new Node(Node.SPACE, "." + i, canStop);
+            var newNode = new Node(Node.HALL, "." + i, canStop);
             prevNode.children.add(newNode);
             newNode.children.add(prevNode);
             prevNode = newNode;
@@ -75,61 +75,98 @@ public class Aoc2123 {
             allNodes.add(newNode);
         }
 
-        var input = "ABDCCBAD";
-        for (var i = 0; i < input.length(); i++) {
-            allNodes.get(i + 11).content = input.charAt(i);
-        }
+        var currentState = new HashMap<String, Pair<Character, Node>>();
+        var chars = "ABDCCBAD";
+        var wrongNodes = new ArrayList<String>();
 
-        for (var nodea : allNodes) {
-            if (!nodea.canStop) continue;
-            for (var nodeb : allNodes) {
-                if (nodea == nodeb || !nodeb.canStop
-                    || nodea.type == Node.SPACE && nodeb.type == Node.SPACE
+        for (var i = 0; i < allNodes.size(); i++) {
+            var a = allNodes.get(i);
+            if (!a.canStop) continue;
+            for (var b : allNodes) {
+                if (a == b || !b.canStop
+                    || a.type == Node.HALL && b.type == Node.HALL
                 ) continue;
-                nodea.distances.add( new Pair<>(distance(nodea, nodeb, new HashSet<>()), nodeb));
+                a.destinations.add(b.name);
             }
-            nodea.distances.sort(Comparator.comparing(Pair::getKey));
+            if (i >= 11) wrongNodes.add(a.name);
         }
 
+        for (var i = 0; i < allNodes.size(); i++) {
+            var a = allNodes.get(i);
+            currentState.put(a.name, new Pair<>(i >= 11 ? chars.charAt(i - 11) : Character.MIN_VALUE, a));
+        }
 
         //end init
+        var bestCost = Integer.MAX_VALUE;
+        var r = moveToPossiblePlace(new HashMap<>(currentState), new ArrayList<>(wrongNodes));
+        if (r > 0 && r < bestCost) bestCost = r;
 
-        Stack<Node> misplacedNodes = new Stack<>();
-        misplacedNodes.addAll(allNodes.subList(11, allNodes.size()));
+        System.out.println(bestCost);
+    }
 
-        var score = 0;
-        while (misplacedNodes.size() > 0) {
-            var nextNode = misplacedNodes.pop();
-            var maybeDestination = findWhereToMove(nextNode.distances, Node.ROOM, nextNode.content);
-            if (maybeDestination.isEmpty()) {
-                maybeDestination = findWhereToMove(nextNode.distances, Node.SPACE, Character.MIN_VALUE);
-                misplacedNodes.push(maybeDestination.orElseThrow().getValue());
+    private static int moveToPossiblePlace(Map<String, Pair<Character, Node>> currentState, List<String> wrongNodes) {
+        if (wrongNodes.size() == 0) return 0;
+        var moveCost = 0;
+        while (wrongNodes.size() > 0) {
+            var moveWasSuccessful = false;
+            for (var node : wrongNodes) {
+                var wrongNodesClone = new ArrayList<>(wrongNodes);
+                wrongNodesClone.remove(node);
+                var c = currentState.get(node).getKey();
+                var shouldBreak = false;
+                for (var destination : currentState.get(node).getValue().destinations) {
+                    var moveCostNew = moveCostIfValid(c, node, destination, currentState);
+                    if (moveCostNew == -1) continue;
+
+                    moveWasSuccessful = true;
+                    moveCostNew *= costMap.get(c);
+
+                    currentState.put(node, new Pair<>(Character.MIN_VALUE, currentState.get(node).getValue()));
+                    currentState.put(destination, new Pair<>(c, currentState.get(destination).getValue()));
+
+                    if (currentState.get(destination).getValue().type == Node.HALL) {
+                        wrongNodesClone.add(destination);
+                    }
+
+                    var r = moveToPossiblePlace(new HashMap<>(currentState), wrongNodesClone);
+                    moveCostNew += r;
+
+                    moveCost += moveCostNew;
+                    shouldBreak = true;
+                    break;//todo check all destinations?
+                }
+                if (shouldBreak) break;
             }
-
-            var destination = maybeDestination.orElseThrow();
-            score += destination.getKey() * costMap.get(nextNode.content);
-            destination.getValue().content = nextNode.content;
-            nextNode.content = Character.MIN_VALUE;
+            if (!moveWasSuccessful) return -1;
         }
 
-        System.out.println(score);
+        return moveCost;
     }
 
-    private static Optional<Pair<Integer, Node>> findWhereToMove(List<Pair<Integer, Node>> list, boolean type, char name) {
-        return list.stream().filter(e -> {
-            var a = e.getValue().type == type;
-            var b = e.getValue().content == 0;
-            var c = name == 0 || e.getValue().name.charAt(0) == name;
-            return a && b && c;
-        }).findFirst();
+    private static int moveCostIfValid(char c, String start, String end, Map<String, Pair<Character, Node>> currentState) {
+        var endNode = currentState.get(end).getValue();
+        if (endNode.type == Node.ROOM) {
+            if (c != endNode.name.charAt(0)) return -1;
+            if (endNode.name.charAt(1) == '1') {
+                if (currentState.get(String.valueOf(c) + "0").getKey() != c) return -1;
+            }
+        }
+
+        return moveCost(
+            currentState.get(start).getValue(),
+            currentState.get(end).getValue(),
+            new HashSet<>(),
+            currentState
+        );
     }
 
-    private static int distance(Node a, Node b, Set<Node> visited) {
+    private static int moveCost(Node a, Node b, Set<Node> visited, Map<String, Pair<Character, Node>> currentState) {
         if (a == b) return 0;
         for (var child : a.children) {
             if (visited.contains(child)) continue;
+            if (currentState.get(child.name).getKey() != Character.MIN_VALUE) continue;
             visited.add(child);
-            var d = distance(child, b, visited);
+            var d = moveCost(child, b, visited, currentState);
             if (d == -1) continue;
             return d + 1;
         }
