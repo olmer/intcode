@@ -27,25 +27,11 @@ public class Aoc2123 {
 
         @Override
         public String toString() {
-            return "{" +
-                "name='" + name + '\'' +
-                ", type=" + (type ? "room" : "hall") +
-                ", canStop=" + canStop +
-                ", children=" + children.size() +
-                '}';
+            return "";
         }
     }
 
     public static void main(String[] args) {
-        /*
-
-        #############
-        #...........#
-        ###D#B#D#A###
-          #C#C#A#B#
-          #########
-
-         */
 
         var allNodes = new ArrayList<Node>();
         var root = new Node(Node.HALL, ".0", true);
@@ -61,22 +47,23 @@ public class Aoc2123 {
             allNodes.add(newNode);
         }
         prevNode = null;
-        for (var i = 0; i < 8; i++) {
-            var newNode = new Node(Node.ROOM, names[i / 2] + i % 2, true);
-            if (prevNode != null) {
+        for (var i = 0; i < 16; i++) {
+            var newNode = new Node(Node.ROOM, names[i / 4] + i % 4, true);
+            if (i % 4 == 0) {
+                prevNode = newNode;
+            } else {
                 prevNode.children.add(newNode);
                 newNode.children.add(prevNode);
-                allNodes.get(i + 1).children.add(newNode);
-                newNode.children.add(allNodes.get(i + 1));
-                prevNode = null;
-            } else {
                 prevNode = newNode;
+            }
+            if (i % 4 == 3) {
+                allNodes.get(i / 2 + 1).children.add(newNode);
+                newNode.children.add(allNodes.get(i / 2 + 1));
             }
             allNodes.add(newNode);
         }
 
         var currentState = new HashMap<String, Pair<Character, Node>>();
-        var chars = "ABDCCBAD";
         var wrongNodes = new ArrayList<String>();
 
         for (var i = 0; i < allNodes.size(); i++) {
@@ -91,26 +78,32 @@ public class Aoc2123 {
             if (i >= 11) wrongNodes.add(a.name);
         }
 
+        var chars = "CDDDCBCBAABDBCAA";//part 1
+
         for (var i = 0; i < allNodes.size(); i++) {
             var a = allNodes.get(i);
             currentState.put(a.name, new Pair<>(i >= 11 ? chars.charAt(i - 11) : Character.MIN_VALUE, a));
         }
 
-        //end init
-        wrongNodes.remove("A0");
-        wrongNodes.remove("C0");
         var r = moveRemainingWrongNodes(new HashMap<>(currentState), new ArrayList<>(wrongNodes));
 
         System.out.println(r);
     }
+    private static final Map<String, Long> dp = new HashMap<>();
 
-    private static Map<String, Integer> dp = new HashMap<>();
+    private static String genhash(Map<String, Pair<Character, Aoc2123.Node>> currentState, List<String> wrongNodes) {
+        return "" + currentState.toString().hashCode() + wrongNodes.toString().hashCode();
+    }
 
-    private static int moveRemainingWrongNodes(Map<String, Pair<Character, Node>> currentState, List<String> wrongNodes) {
-        var hashKey = currentState.hashCode() + " " + wrongNodes.hashCode();
-        if (dp.containsKey(hashKey)) return dp.get(hashKey);
+    private static long moveRemainingWrongNodes(Map<String, Pair<Character, Node>> currentState, List<String> wrongNodes) {
+        if (wrongNodes.isEmpty()) return 0;
+        var hashKey = genhash(currentState, wrongNodes);
 
-        var cost = 0;
+        if (dp.containsKey(hashKey)) {
+            return dp.get(hashKey);
+        }
+
+        var bestCost = Long.MAX_VALUE;
         for (var wrongNodeName : wrongNodes) {
             var bestDestinationCost = Long.valueOf(Integer.MAX_VALUE);
             var wrongNode = currentState.get(wrongNodeName).getValue();
@@ -135,23 +128,14 @@ public class Aoc2123 {
 
                 destinationCost += moveRemainingWrongNodes(stateClone, wrongNodesClone);
 
-                if (destinationCost == 14460) {
-                    System.out.println(wrongNodes + ": " + destinationCost);
-                }
-
-
                 if (destinationCost > 0 && destinationCost < bestDestinationCost) bestDestinationCost = destinationCost;
             }
-            if (bestDestinationCost != Integer.MAX_VALUE) cost += bestDestinationCost;
+            if (bestDestinationCost < bestCost) bestCost  = bestDestinationCost;
         }
 
-        if (cost == 14460) {
-            System.out.println(wrongNodes.size() + ":!!! " + cost);
-        }
+        dp.put(hashKey, bestCost);
 
-        dp.put(hashKey, cost);
-
-        return cost;
+        return bestCost;
     }
 
     private static long moveCostIfValid(char c, String start, String end, Map<String, Pair<Character, Node>> currentState) {
