@@ -97,58 +97,69 @@ public class Aoc2123 {
         }
 
         //end init
-        var bestCost = Integer.MAX_VALUE;
-        var r = moveToPossiblePlace(new HashMap<>(currentState), new ArrayList<>(wrongNodes));
-        if (r > 0 && r < bestCost) bestCost = r;
+        wrongNodes.remove("A0");
+        wrongNodes.remove("C0");
+        var r = moveRemainingWrongNodes(new HashMap<>(currentState), new ArrayList<>(wrongNodes));
 
-        System.out.println(bestCost);
+        System.out.println(r);
     }
 
-    private static int moveToPossiblePlace(Map<String, Pair<Character, Node>> currentState, List<String> wrongNodes) {
-        if (wrongNodes.size() == 0) return 0;
-        var moveCost = 0;
-        while (wrongNodes.size() > 0) {
-            var moveWasSuccessful = false;
-            for (var node : wrongNodes) {
+    private static Map<String, Integer> dp = new HashMap<>();
+
+    private static int moveRemainingWrongNodes(Map<String, Pair<Character, Node>> currentState, List<String> wrongNodes) {
+        var hashKey = currentState.hashCode() + " " + wrongNodes.hashCode();
+        if (dp.containsKey(hashKey)) return dp.get(hashKey);
+
+        var cost = 0;
+        for (var wrongNodeName : wrongNodes) {
+            var bestDestinationCost = Long.valueOf(Integer.MAX_VALUE);
+            var wrongNode = currentState.get(wrongNodeName).getValue();
+            var character = currentState.get(wrongNodeName).getKey();
+
+            for (var destination : wrongNode.destinations) {
+                var stateClone = new HashMap<>(currentState);
+
+                var destinationCost = moveCostIfValid(character, wrongNodeName, destination, stateClone);
+                if (destinationCost == -1) continue;
+
+                destinationCost *= costMap.get(character);
+
+                stateClone.put(wrongNodeName, new Pair<>(Character.MIN_VALUE, stateClone.get(wrongNodeName).getValue()));
+                stateClone.put(destination, new Pair<>(character, stateClone.get(destination).getValue()));
                 var wrongNodesClone = new ArrayList<>(wrongNodes);
-                wrongNodesClone.remove(node);
-                var c = currentState.get(node).getKey();
-                var shouldBreak = false;
-                for (var destination : currentState.get(node).getValue().destinations) {
-                    var moveCostNew = moveCostIfValid(c, node, destination, currentState);
-                    if (moveCostNew == -1) continue;
 
-                    moveWasSuccessful = true;
-                    moveCostNew *= costMap.get(c);
-
-                    currentState.put(node, new Pair<>(Character.MIN_VALUE, currentState.get(node).getValue()));
-                    currentState.put(destination, new Pair<>(c, currentState.get(destination).getValue()));
-
-                    if (currentState.get(destination).getValue().type == Node.HALL) {
-                        wrongNodesClone.add(destination);
-                    }
-
-                    var r = moveToPossiblePlace(new HashMap<>(currentState), wrongNodesClone);
-                    moveCostNew += r;
-
-                    moveCost += moveCostNew;
-                    shouldBreak = true;
-                    break;//todo check all destinations?
+                wrongNodesClone.remove(wrongNodeName);
+                if (stateClone.get(destination).getValue().type == Node.HALL) {
+                    wrongNodesClone.add(destination);
                 }
-                if (shouldBreak) break;
+
+                destinationCost += moveRemainingWrongNodes(stateClone, wrongNodesClone);
+
+                if (destinationCost == 14460) {
+                    System.out.println(wrongNodes + ": " + destinationCost);
+                }
+
+
+                if (destinationCost > 0 && destinationCost < bestDestinationCost) bestDestinationCost = destinationCost;
             }
-            if (!moveWasSuccessful) return -1;
+            if (bestDestinationCost != Integer.MAX_VALUE) cost += bestDestinationCost;
         }
 
-        return moveCost;
+        if (cost == 14460) {
+            System.out.println(wrongNodes.size() + ":!!! " + cost);
+        }
+
+        dp.put(hashKey, cost);
+
+        return cost;
     }
 
-    private static int moveCostIfValid(char c, String start, String end, Map<String, Pair<Character, Node>> currentState) {
+    private static long moveCostIfValid(char c, String start, String end, Map<String, Pair<Character, Node>> currentState) {
         var endNode = currentState.get(end).getValue();
         if (endNode.type == Node.ROOM) {
             if (c != endNode.name.charAt(0)) return -1;
             if (endNode.name.charAt(1) == '1') {
-                if (currentState.get(String.valueOf(c) + "0").getKey() != c) return -1;
+                if (currentState.get(c + "0").getKey() != c) return -1;
             }
         }
 
@@ -160,7 +171,7 @@ public class Aoc2123 {
         );
     }
 
-    private static int moveCost(Node a, Node b, Set<Node> visited, Map<String, Pair<Character, Node>> currentState) {
+    private static long moveCost(Node a, Node b, Set<Node> visited, Map<String, Pair<Character, Node>> currentState) {
         if (a == b) return 0;
         for (var child : a.children) {
             if (visited.contains(child)) continue;
