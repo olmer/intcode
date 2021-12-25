@@ -1,4 +1,6 @@
 import javafx.util.Pair;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 public class Aoc2123 {
@@ -31,8 +33,10 @@ public class Aoc2123 {
         }
     }
 
-    public static void main(String[] args) {
+    static long analyzed = 0;
 
+    public static void main(String[] args) {
+        Instant start = Instant.now();
         var allNodes = new ArrayList<Node>();
         var root = new Node(Node.HALL, ".0", true);
         allNodes.add(root);
@@ -88,6 +92,12 @@ public class Aoc2123 {
         var r = moveRemainingWrongNodes(new HashMap<>(currentState), new ArrayList<>(wrongNodes));
 
         System.out.println(r);
+
+        Instant end = Instant.now();
+
+        System.out.println("moves analyzed: " + analyzed);
+        System.out.println("duration: " + Duration.between(start, end).toSeconds() + " s");
+        System.out.println("or " + Duration.between(start, end).toMinutes() + " min");
     }
     private static final Map<String, Long> dp = new HashMap<>();
 
@@ -134,6 +144,8 @@ public class Aoc2123 {
         }
 
         dp.put(hashKey, bestCost);
+
+        analyzed++;
 
         return bestCost;
     }
