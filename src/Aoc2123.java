@@ -1,4 +1,3 @@
-import javafx.util.Pair;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -20,6 +19,12 @@ public class Aoc2123 {
         final String name;
         final List<Node> children = new ArrayList<>();
         final List<String> destinations = new ArrayList<>();
+
+        Node(){
+            type = true;
+            canStop = true;
+            name = "";
+        }
 
         Node(boolean type, String name, boolean canStop) {
             this.type = type;
@@ -67,7 +72,7 @@ public class Aoc2123 {
             allNodes.add(newNode);
         }
 
-        var currentState = new HashMap<String, Pair<Character, Node>>();
+        var currentState = new HashMap<String, Integer>();
         var wrongNodes = new ArrayList<String>();
 
         for (var i = 0; i < allNodes.size(); i++) {
@@ -86,10 +91,10 @@ public class Aoc2123 {
 
         for (var i = 0; i < allNodes.size(); i++) {
             var a = allNodes.get(i);
-            currentState.put(a.name, new Pair<>(i >= 11 ? chars.charAt(i - 11) : Character.MIN_VALUE, a));
+            currentState.put(a.name, 1);
         }
 
-        var r = moveRemainingWrongNodes(new HashMap<>(currentState), new ArrayList<>(wrongNodes));
+        var r = moveRemainingWrongNodes(new ArrayList<>(wrongNodes));
 
         System.out.println(r);
 
@@ -101,13 +106,13 @@ public class Aoc2123 {
     }
     private static final Map<String, Long> dp = new HashMap<>();
 
-    private static String genhash(Map<String, Pair<Character, Aoc2123.Node>> currentState, List<String> wrongNodes) {
-        return "" + currentState.toString().hashCode() + wrongNodes.toString().hashCode();
+    private static String genhash(List<String> wrongNodes) {
+        return "" + wrongNodes.toString().hashCode();
     }
 
-    private static long moveRemainingWrongNodes(Map<String, Pair<Character, Node>> currentState, List<String> wrongNodes) {
+    private static long moveRemainingWrongNodes(List<String> wrongNodes) {
         if (wrongNodes.isEmpty()) return 0;
-        var hashKey = genhash(currentState, wrongNodes);
+        var hashKey = genhash(wrongNodes);
 
         if (dp.containsKey(hashKey)) {
             return dp.get(hashKey);
@@ -116,27 +121,27 @@ public class Aoc2123 {
         var bestCost = Long.MAX_VALUE;
         for (var wrongNodeName : wrongNodes) {
             var bestDestinationCost = Long.valueOf(Integer.MAX_VALUE);
-            var wrongNode = currentState.get(wrongNodeName).getValue();
-            var character = currentState.get(wrongNodeName).getKey();
+            var wrongNode = new Node();
+            var character = 'c';
 
             for (var destination : wrongNode.destinations) {
-                var stateClone = new HashMap<>(currentState);
+                var stateClone = new HashMap<String, Integer>();
 
-                var destinationCost = moveCostIfValid(character, wrongNodeName, destination, stateClone);
+                var destinationCost = moveCostIfValid(character, wrongNodeName, destination);
                 if (destinationCost == -1) continue;
 
                 destinationCost *= costMap.get(character);
 
-                stateClone.put(wrongNodeName, new Pair<>(Character.MIN_VALUE, stateClone.get(wrongNodeName).getValue()));
-                stateClone.put(destination, new Pair<>(character, stateClone.get(destination).getValue()));
+                stateClone.put(wrongNodeName, 1);
+                stateClone.put(destination, 1);
                 var wrongNodesClone = new ArrayList<>(wrongNodes);
 
                 wrongNodesClone.remove(wrongNodeName);
-                if (stateClone.get(destination).getValue().type == Node.HALL) {
-                    wrongNodesClone.add(destination);
-                }
+//                if (stateClone.get(destination).getValue().type == Node.HALL) {
+//                    wrongNodesClone.add(destination);
+//                }
 
-                destinationCost += moveRemainingWrongNodes(stateClone, wrongNodesClone);
+//                destinationCost += moveRemainingWrongNodes(stateClone, wrongNodesClone);
 
                 if (destinationCost > 0 && destinationCost < bestDestinationCost) bestDestinationCost = destinationCost;
             }
@@ -150,30 +155,29 @@ public class Aoc2123 {
         return bestCost;
     }
 
-    private static long moveCostIfValid(char c, String start, String end, Map<String, Pair<Character, Node>> currentState) {
-        var endNode = currentState.get(end).getValue();
+    private static long moveCostIfValid(char c, String start, String end) {
+        var endNode = new Node();
         if (endNode.type == Node.ROOM) {
             if (c != endNode.name.charAt(0)) return -1;
             if (endNode.name.charAt(1) == '1') {
-                if (currentState.get(c + "0").getKey() != c) return -1;
+//                if (currentState.get(c + "0").getKey() != c) return -1;
             }
         }
 
         return moveCost(
-            currentState.get(start).getValue(),
-            currentState.get(end).getValue(),
-            new HashSet<>(),
-            currentState
+          endNode,
+          endNode,
+            new HashSet<>()
         );
     }
 
-    private static long moveCost(Node a, Node b, Set<Node> visited, Map<String, Pair<Character, Node>> currentState) {
+    private static long moveCost(Node a, Node b, Set<Node> visited) {
         if (a == b) return 0;
         for (var child : a.children) {
             if (visited.contains(child)) continue;
-            if (currentState.get(child.name).getKey() != Character.MIN_VALUE) continue;
+//            if (currentState.get(child.name).getKey() != Character.MIN_VALUE) continue;
             visited.add(child);
-            var d = moveCost(child, b, visited, currentState);
+            var d = 1;
             if (d == -1) continue;
             return d + 1;
         }
