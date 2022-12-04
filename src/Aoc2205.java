@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class Aoc2204 {
+public class Aoc2205 {
   public static void main(String[] args) {
     int r = 0;
 
