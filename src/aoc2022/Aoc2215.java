@@ -35,38 +35,34 @@ public class Aoc2215 {
 
     System.out.println(sensors);
 
-    for (var sen : sensors.entrySet()) {
-      long x = sen.getKey().getKey();
-      long y = sen.getKey().getValue();
-      long d = sen.getValue();
-      long yyy = 0;
-      for (long xx = x - d - 1; xx != x + d + 1; xx++) {
-        long yy1 = y + yyy;
-        long yy2 = y - yyy;
+    for (var sensor : sensors.entrySet()) {
+      long sensorX = sensor.getKey().getKey();
+      long sensorY = sensor.getKey().getValue();
+      long sensorArea = sensor.getValue();
+      long yOffset = 0;
+      for (long potentialX = sensorX - sensorArea - 1; potentialX != sensorX + sensorArea + 1; potentialX++) {
+        boolean isInRangeOfSensor = false;
+        for (long potentialY : new long[]{sensorY + yOffset, sensorY - yOffset}) {
+          for (var sensorToTest : sensors.entrySet()) {
+            long sensorToTestX = sensorToTest.getKey().getKey();
+            long sensorToTestY = sensorToTest.getKey().getValue();
 
-        boolean inrange = false;
-
-        for (long yy : new long[]{yy1, yy2}) {
-          for (var e : sensors.entrySet()) {
-            long sx = e.getKey().getKey();
-            long sy = e.getKey().getValue();
-
-            long di = Math.abs(sx - xx) + Math.abs(sy - yy);
-            if (di <= e.getValue()) {
-              inrange = true;
+            long distance = Math.abs(sensorToTestX - potentialX) + Math.abs(sensorToTestY - potentialY);
+            if (distance <= sensorToTest.getValue()) {
+              isInRangeOfSensor = true;
               break;
             }
           }
 
-          if (!inrange && xx >= 0 && yy >= 0 && xx < searchSpace && yy < searchSpace) {
-            System.out.println(xx + " : " + yy);
-            System.out.println(xx * 4000000 + yy);
+          if (!isInRangeOfSensor && potentialX >= 0 && potentialY >= 0 && potentialX < searchSpace && potentialY < searchSpace) {
+            System.out.println(potentialX + " : " + potentialY);
+            System.out.println(potentialX * 4000000 + potentialY);
           }
         }
-        if (xx > x) {
-          yyy++;
+        if (potentialX > sensorX) {
+          yOffset++;
         } else {
-          yyy--;
+          yOffset--;
         }
       }
     }
