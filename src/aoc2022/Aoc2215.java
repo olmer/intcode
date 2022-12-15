@@ -1,9 +1,9 @@
 package aoc2022;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
+
+import tools.Parse;
 
 public class Aoc2215 {
   static boolean TEST = true;
@@ -12,12 +12,7 @@ public class Aoc2215 {
     Map<Pair<Long, Long>, Long> sensors = new HashMap<>();
 
     for (String sens : getInput()) {
-      var pattern = Pattern.compile("-?\\d+");
-      var matcher = pattern.matcher(sens);
-      var digits = new ArrayList<Long>();
-      while (matcher.find()) {
-        digits.add(Long.valueOf(matcher.group()));
-      }
+      var digits = Parse.longs(sens);
 
       long distance = Math.abs(digits.get(0) - digits.get(2)) + Math.abs(digits.get(1) - digits.get(3));
       sensors.put(new Pair<>(digits.get(0), digits.get(1)), distance);

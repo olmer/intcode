@@ -1,18 +1,16 @@
 package aoc2022;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import tools.Parse;
 
 public class Aoc2204 {
   public static void main(String[] args) {
     int r = 0;
 
     for (var s : getInput()) {
-      var ss = s.split(",");
-      var ss1 = Arrays.stream(ss[0].split("-")).map(Integer::valueOf).collect(Collectors.toList());
-      var ss2 = Arrays.stream(ss[1].split("-")).map(Integer::valueOf).collect(Collectors.toList());
+      var ranges = Parse.ranges(s);
 
-      if (ss2.get(0) <= ss1.get(1) && ss2.get(0) >= ss1.get(0) || ss1.get(0) <= ss2.get(1) && ss1.get(0) >= ss2.get(0))
+      if (ranges.get(1).getKey() <= ranges.get(0).getValue() && ranges.get(1).getKey() >= ranges.get(0).getKey()
+        || ranges.get(0).getKey() <= ranges.get(1).getValue() && ranges.get(0).getKey() >= ranges.get(1).getKey())
         r++;
 
     }

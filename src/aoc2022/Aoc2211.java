@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import tools.Parse;
+
 public class Aoc2211 {
   public static void main(String[] args) throws Exception {
     var input = getInput(true);
@@ -12,20 +14,20 @@ public class Aoc2211 {
     long[] inspec = new long[input.length];
 
     for (int i = 0; i < input.length; i++) {
-      String[] rows = input[i].split("\n");
-      String[] items = rows[1].split(" ");
+      var monkeyMap = Parse.map(input[i]);
+      String[] items = monkeyMap.get("Starting items").split(" ");
       ArrayDeque<Long> itmslist = new ArrayDeque<>();
-      for (int j = 4; j < items.length; j++) {
-        if (items[j].charAt(items[j].length() - 1) == ',') {
-          itmslist.offer(Long.parseLong(items[j].substring(0, items[j].length() - 1)));
+      for (String item : items) {
+        if (item.charAt(item.length() - 1) == ',') {
+          itmslist.offer(Long.parseLong(item.substring(0, item.length() - 1)));
         } else {
-          itmslist.offer(Long.parseLong(items[j]));
+          itmslist.offer(Long.parseLong(item));
         }
       }
-      String op = rows[2];
-      String test = rows[3];
-      String[] tru = rows[4].split(" ");
-      String[] fal = rows[5].split(" ");
+      String op = monkeyMap.get("Operation");
+      String test = monkeyMap.get("Test");
+      String[] tru = monkeyMap.get("If true").split(" ");
+      String[] fal = monkeyMap.get("If false").split(" ");
       mons.put(i, new Monkey(
         itmslist,
         new int[]{Integer.parseInt(tru[tru.length - 1]), Integer.parseInt(fal[fal.length - 1])},
@@ -68,14 +70,14 @@ public class Aoc2211 {
     public Monkey(ArrayDeque<Long> startItems, int[] dest_, String op_, String test) {
       items = startItems;
       dest = dest_;
-      divby = Integer.parseInt(test.split(" ")[5]);
+      divby = Integer.parseInt(test.split(" ")[2]);
 
       op = (long p) -> {
         long s = p;
-        if (!op_.split(" ")[7].equals("old")) {
-          s = Long.parseLong(op_.split(" ")[7]);
+        if (!op_.split(" ")[4].equals("old")) {
+          s = Long.parseLong(op_.split(" ")[4]);
         }
-        return switch ((op_.split(" "))[6]) {
+        return switch ((op_.split(" "))[3]) {
           case "*" -> p * s;
           case "+" -> p + s;
           default -> throw new Exception("wtf");
