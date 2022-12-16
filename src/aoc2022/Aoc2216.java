@@ -6,43 +6,33 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
 import tools.Parse;
 
 public class Aoc2216 {
-  static boolean TEST = true;
+  static boolean TEST = false;
   static int PART = 1;
   static int TIME_LIMIT = PART == 1 ? 30 : 26;
 
   static Map<String, Pair<Integer, String[]>> map;
-  static long opened = 0;
-  static Set<String> openable;
-  static Set<String> visited;
-  static Map<String, Long> mask = new HashMap<>();
 
   static List<String> debugVisited = new ArrayList<>();
 
   public static void main(String[] args) throws Exception {
-    map = new HashMap<>();
-    openable = new HashSet<>();
-    visited = new HashSet<>();
+    long start = System.currentTimeMillis();
 
-    int i = 0;
+    map = new HashMap<>();
+
     for (var s : getInput()) {
       String dest = s.split(";")[1].replace(" tunnels lead to valves ", "");
       map.put(s.substring(6, 8), new Pair<>(Parse.integers(s).stream().findFirst().get(), dest.replace(" tunnel leads to valve ", "").split(", ")));
       if (Parse.integers(s).stream().findFirst().get() > 0) {
-        openable.add(s.substring(6, 8));
       }
-      mask.put(s.substring(6, 8), 1L << i);
-      i++;
     }
 
 
-    var distancesPermutations = generateDistancesPermutations();
     var distancesMap = generateDistancesMap();
 
     Set<String> visited = new HashSet<>();
@@ -51,6 +41,9 @@ public class Aoc2216 {
     long r = dfs("AA", visited, TIME_LIMIT, 0, distancesMap);
 
     System.out.println(r);
+
+    long end = System.currentTimeMillis();
+    System.out.println((end - start) + " ms");
   }
 
   static long dfs(String cur, Set<String> opened, int timeLeft, long flow, Map<String, List<Pair<String, Integer>>> distancesMap) {
@@ -77,7 +70,6 @@ public class Aoc2216 {
       }
       opened.add(next.getKey());
 
-
       best = Math.max(
         best,
         dfs(
@@ -90,28 +82,11 @@ public class Aoc2216 {
       );
 
       opened.remove(next.getKey());
-
     }
 
 //    debugVisited.remove(debugVisited.size() - 1);
 
     return best;
-  }
-
-  static Map<Pair<String, String>, Integer> generateDistancesPermutations() {
-    Map<Pair<String, String>, Integer> distances = new HashMap<>();
-    for (var i : map.keySet()) {
-      for (var j : map.keySet()) {
-        if (i.equals(j) || map.get(j).getKey() == 0) {
-          continue;
-        }
-        int distance = bfs(i, j);
-        if (distance <= TIME_LIMIT) {
-          distances.put(new Pair<>(i, j), distance);
-        }
-      }
-    }
-    return distances;
   }
 
   static Map<String, List<Pair<String, Integer>>> generateDistancesMap() {
@@ -162,8 +137,6 @@ public class Aoc2216 {
 
     return -1;
   }
-
-
 
   private static String[] getInput() {
     String testStr = "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB\n" +
@@ -247,144 +220,5 @@ public class Aoc2216 {
       "Valve OF has flow rate=19; tunnel leads to valve KV";
 
     return (TEST ? testStr : realStr).split("\n");
-  }
-
-  //@todo: remove everything below
-  static void helper3(int timeLeft, List<String> curPath, PriorityQueue<Pair<Integer, List<String>>> result, int cost, String pos, Set<String> visited) {
-    boolean noMoreVisits = true;
-
-    for (var dest : map.get(pos).getValue()) {
-      if (!visited.contains(dest)) {
-        noMoreVisits = false;
-      }
-    }
-
-    if (noMoreVisits || timeLeft <= 0 || visited.size() == map.size()) {
-      if (cost == 0) {
-        return;
-      }
-      if (result.size() > 10) {
-        result.poll();
-      }
-      result.offer(new Pair<>(cost, new ArrayList<>(curPath)));
-      return;
-    }
-
-    for (var dest : map.get(pos).getValue()) {
-      if (visited.contains(dest)) {
-        continue;
-      }
-      visited.add(dest);
-      curPath.add(dest);
-      helper3(timeLeft - 1, curPath, result, cost + map.get(pos).getKey() - 1, dest, visited);
-      curPath.remove(curPath.size() - 1);
-      visited.remove(dest);
-    }
-  }
-
-  static int[] op = new int[]{3, 2, 1, 0};
-  static Map<Integer, Map<String, Map<String, Map<Long, Integer>>>> dp2 = new HashMap<>();
-  static Map<Integer, Map<String, Map<Set<String>, Integer>>> dp = new HashMap<>();
-
-  static Map<Integer, Pair<Set<String>, Integer>> timesbestdp = new HashMap<>();
-
-  static void paths(String from, String to) {
-  }
-
-
-  static int helper (int timeLeft, String pos, Set<String> opened) {
-    if (opened.size() == openable.size()) {
-      return 0;
-    }
-
-    if (dp.containsKey(timeLeft) && dp.get(timeLeft).containsKey(pos) && dp.get(timeLeft).get(pos).containsKey(opened)) {
-      return dp.get(timeLeft).get(pos).get(opened);
-    }
-
-    if (timeLeft <= 0)
-      return 0;
-
-    int maxr = 0;
-    for (var shouldOpenCur : op) {
-      for (var dest : map.get(pos).getValue()) {
-        if (shouldOpenCur == 1 && !opened.contains(pos) && map.get(pos).getKey() > 0) {
-          opened.add(pos);
-          maxr = Math.max(maxr, helper(timeLeft - 2, dest, opened) + ((timeLeft - 1) * map.get(pos).getKey()));
-
-          if (!timesbestdp.containsKey(timeLeft)) {
-            timesbestdp.put(timeLeft, new Pair<>(new HashSet<>(opened), maxr));
-          } else if (timesbestdp.get(timeLeft).getValue() < maxr) {
-            timesbestdp.put(timeLeft, new Pair<>(new HashSet<>(opened), maxr));
-          }
-
-          opened.remove(pos);
-        } else {
-          maxr = Math.max(maxr, helper(timeLeft - 1, dest, opened));
-        }
-      }
-    }
-
-    dp.putIfAbsent(timeLeft, new HashMap<>());
-    dp.get(timeLeft).putIfAbsent(pos, new HashMap<>());
-    dp.get(timeLeft).get(pos).put(opened, maxr);
-
-    return maxr;
-  }
-
-
-  static int helper2 (int timeLeft, String posme, String posel, long opened) {
-//    if (openable.size() == opened.size()) {
-//      return 0;
-//      System.out.println(opened);
-//      System.out.println(posme + " " + posel);
-//    }
-
-    if (dp2.containsKey(timeLeft)
-      && dp2.get(timeLeft).containsKey(posme)
-      && dp2.get(timeLeft).get(posme).containsKey(posel)
-      && dp2.get(timeLeft).get(posme).get(posel).containsKey(opened)
-    ) {
-      return dp2.get(timeLeft).get(posme).get(posel).get(opened);
-    }
-
-    if (timeLeft <= 0)
-      return 0;
-
-    //2 cases: we both move somewhere (all combinations of 2 dirs), one open one moves
-    int maxr = 0;
-    for (String destme : map.get(posme).getValue()) {
-      for (String destel : map.get(posel).getValue()) {
-        for (int operation : op) {
-
-          if (operation == 3 && ((opened & mask.get(posme)) == 0 && map.get(posme).getKey() > 0 || (opened & mask.get(posel)) == 0 && map.get(posel).getKey() > 0)) {
-            opened = opened | mask.get(posme);
-            opened = opened | mask.get(posel);
-            maxr = Math.max(maxr, helper2(timeLeft - 1, posme, posel, opened) + ((timeLeft - 1) * map.get(posme).getKey()) + ((timeLeft - 1) * map.get(posel).getKey()));
-            opened = opened & (~mask.get(posme));
-            opened = opened & (~mask.get(posel));
-          } else if (operation == 0 && (opened & mask.get(posme)) == 0 && map.get(posme).getKey() > 0) {
-            opened = opened | mask.get(posme);
-            int tr = helper2(timeLeft - 1, posme, destel, opened) + ((timeLeft - 1) * map.get(posme).getKey());
-            maxr = Math.max(maxr, tr);
-            opened = opened & (~mask.get(posme));
-          } else if (operation == 1 && (opened & mask.get(posel)) == 0 && map.get(posel).getKey() > 0) {
-            opened = opened | mask.get(posel);
-            int tr = helper2(timeLeft - 1, destme, posel, opened) + ((timeLeft - 1) * map.get(posel).getKey());
-            maxr = Math.max(maxr, tr);
-            opened = opened & (~mask.get(posel));
-          } else {
-            int tr = helper2(timeLeft - 1, destme, destel, opened);
-            maxr = Math.max(maxr, tr);
-          }
-        }
-      }
-    }
-
-    dp2.putIfAbsent(timeLeft, new HashMap<>());
-    dp2.get(timeLeft).putIfAbsent(posme, new HashMap<>());
-    dp2.get(timeLeft).get(posme).putIfAbsent(posel, new HashMap<>());
-    dp2.get(timeLeft).get(posme).get(posel).put(opened, maxr);
-
-    return maxr;
   }
 }
