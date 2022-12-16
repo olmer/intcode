@@ -33,13 +33,13 @@ public class Parse {
   }
 
   public static Map<String, String> map(String s) {
-    return mapDelimited(s, ":");
+    return mapDelimited(s, ":", "\n");
   }
 
-  public static Map<String, String> mapDelimited(String s, String del) {
+  public static Map<String, String> mapDelimited(String s, String keyValueDel, String propertiesDel) {
     var map = new HashMap<String, String>();
-    for (String line : s.split("\n")) {
-      var ln = Arrays.stream(line.split(del)).map(e -> e.trim()).toList();
+    for (String line : s.split(propertiesDel)) {
+      var ln = Arrays.stream(line.split(keyValueDel)).map(e -> e.trim()).toList();
       if (map.containsKey(ln.get(0).trim())) {
         System.out.println("Warning: mapping contained duplicate keys: " + ln.get(0));
       }
