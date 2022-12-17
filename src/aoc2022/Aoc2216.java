@@ -2,6 +2,7 @@ package aoc2022;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -73,10 +74,7 @@ public class Aoc2216 {
         if (cur.equals(to)) {
           return distance;
         }
-        for (String next : map.get(cur).getValue()) {
-          if (visited.contains(next)) {
-            continue;
-          }
+        for (String next : Arrays.stream(map.get(cur).getValue()).filter(e -> !visited.contains(e)).toList()) {
           visited.add(next);
           q.offer(next);
         }
