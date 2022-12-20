@@ -21,6 +21,7 @@ public class Aoc2220 {
     }
   }
   static boolean TEST = true;
+  static int PART = 2;
 
   public static void main(String[] args) throws Exception {
     List<Num> l = new LinkedList<>();
@@ -28,7 +29,10 @@ public class Aoc2220 {
     Num z = new Num(0);
 
     for (var num : Parse.longs(getInput())) {
-      var n = new Num(num * 811589153);
+      var n = new Num(num);
+      if (PART == 2) {
+        n = new Num(num * 811589153);
+      }
       if (n.val == 0) {
         z = n;
       }
@@ -38,13 +42,13 @@ public class Aoc2220 {
 
     int mod = l.size() - 1;
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < (PART == 2 ? 10 : 1); i++) {
       for (var num : order) {
         if (num.val == 0) {
           continue;
         }
         int idx = l.indexOf(num);
-        int newPos = (int) (idx + num.val + mod * 811589153) % mod;
+        int newPos = (int) (idx + (num.val % (mod)) + mod) % mod;
 
         l.remove(num);
         l.add(newPos, num);
