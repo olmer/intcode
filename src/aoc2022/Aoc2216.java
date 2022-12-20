@@ -3,20 +3,27 @@ package aoc2022;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeSet;
 
 import tools.Parse;
 
 public class Aoc2216 {
-  static boolean TEST = true;
-  static int TIME_LIMIT = 30;
+  static boolean TEST = false;
+  static boolean PART = true;
+  static int TIME_LIMIT = PART ? 26 : 30;
 
   static Map<String, Pair<Integer, String[]>> map;
+
+  static Set<String> visited = new HashSet<>();
+
+  static Set<Pair<Long, Set<String>>> allPaths = new TreeSet<>(Comparator.comparingLong(Pair::getKey));
 
   public static void main(String[] args) throws Exception {
     long start = System.currentTimeMillis();
@@ -28,19 +35,42 @@ public class Aoc2216 {
     Set<String> visited = new HashSet<>();
     visited.add("AA");
 
-    long r = dfs("AA", visited, TIME_LIMIT, 0, distancesMap);
+    dfs("AA", visited, TIME_LIMIT, 0, distancesMap);
+
+    long result = 0;
+
+    for (var first : allPaths) {
+      for (var second : allPaths) {
+        if (first.equals(second)) {
+          continue;
+        }
+
+        var fits = true;
+        for (var path : second.getValue()) {
+          if (path.equals("AA"))
+            continue;
+          if (first.getValue().contains(path)) {
+            fits = false;
+            break;
+          }
+        }
+        if (fits) {
+          result = Math.max(result, first.getKey() + second.getKey());
+        }
+      }
+    }
 
     long end = System.currentTimeMillis();
     System.out.println((end - start) + " ms");
 
-    System.out.println(r);
+    System.out.println(result);
   }
 
   static long dfs(String cur, Set<String> opened, int timeLeft, long flow, Map<String, List<Pair<String, Integer>>> distancesMap) {
     if (timeLeft <= 0)
       return 0;
 
-//    debugVisited.add(cur);
+    visited.add(cur);
     long best = flow;
     for (Pair<String, Integer> next : distancesMap.get(cur)) {
       if (opened.contains(next.getKey()))
@@ -56,7 +86,13 @@ public class Aoc2216 {
 
       opened.remove(next.getKey());
     }
-//    debugVisited.remove(debugVisited.size() - 1);
+
+    var visitedList = new Pair<Long, Set<String>>(best, new HashSet<>(visited));
+    visitedList.getValue().add(String.valueOf(best));
+
+    allPaths.add(visitedList);
+
+    visited.remove(cur);
     return best;
   }
 
@@ -115,8 +151,6 @@ public class Aoc2216 {
     }
     return map;
   }
-
-  static List<String> debugVisited = new ArrayList<>();
 
   private static String[] getInput() {
     String testStr = "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB\n" +
