@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
+import tools.Pair;
+
 public class Aoc2217 {
   static boolean TEST = true;
   static boolean DEBUG = false;

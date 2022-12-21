@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import aoc2022.Pair;
-
 public class Parse {
   public static List<Integer> integers(String s) {
     var pattern = Pattern.compile("-?\\d+");

@@ -3,6 +3,7 @@ package aoc2022;
 import java.util.HashMap;
 import java.util.Map;
 
+import tools.Pair;
 import tools.Parse;
 
 public class Aoc2215 {

@@ -1,4 +1,4 @@
-package aoc2022;
+package tools;
 
 import java.io.Serializable;
 
@@ -29,7 +29,7 @@ public class Pair<K, V> implements Serializable {
    */
 
   /**
-     * Key of this <code>aoc2022.Pair</code>.
+     * Key of this <code>tools.Pair</code>.
      */
     private K key;
 
@@ -42,7 +42,7 @@ public class Pair<K, V> implements Serializable {
     }
 
     /**
-     * Value of this this <code>aoc2022.Pair</code>.
+     * Value of this this <code>tools.Pair</code>.
      */
     private V value;
 
@@ -66,11 +66,11 @@ public class Pair<K, V> implements Serializable {
 
     /**
      * <p><code>String</code> representation of this
-     * <code>aoc2022.Pair</code>.</p>
+     * <code>tools.Pair</code>.</p>
      *
      * <p>The default name/value delimiter '=' is always used.</p>
      *
-     *  @return <code>String</code> representation of this <code>aoc2022.Pair</code>
+     *  @return <code>String</code> representation of this <code>tools.Pair</code>
      */
     @Override
     public String toString() {
@@ -78,12 +78,12 @@ public class Pair<K, V> implements Serializable {
     }
 
     /**
-     * <p>Generate a hash code for this <code>aoc2022.Pair</code>.</p>
+     * <p>Generate a hash code for this <code>tools.Pair</code>.</p>
      *
      * <p>The hash code is calculated using both the name and
-     * the value of the <code>aoc2022.Pair</code>.</p>
+     * the value of the <code>tools.Pair</code>.</p>
      *
-     * @return hash code for this <code>aoc2022.Pair</code>
+     * @return hash code for this <code>tools.Pair</code>
      */
     @Override
     public int hashCode() {
@@ -94,20 +94,20 @@ public class Pair<K, V> implements Serializable {
     }
 
     /**
-     * <p>Test this <code>aoc2022.Pair</code> for equality with another
+     * <p>Test this <code>tools.Pair</code> for equality with another
      * <code>Object</code>.</p>
      *
      * <p>If the <code>Object</code> to be tested is not a
-     * <code>aoc2022.Pair</code> or is <code>null</code>, then this method
+     * <code>tools.Pair</code> or is <code>null</code>, then this method
      * returns <code>false</code>.</p>
      *
-     * <p>Two <code>aoc2022.Pair</code>s are considered equal if and only if
+     * <p>Two <code>tools.Pair</code>s are considered equal if and only if
      * both the names and values are equal.</p>
      *
      * @param o the <code>Object</code> to test for
-     * equality with this <code>aoc2022.Pair</code>
+     * equality with this <code>tools.Pair</code>
      * @return <code>true</code> if the given <code>Object</code> is
-     * equal to this <code>aoc2022.Pair</code> else <code>false</code>
+     * equal to this <code>tools.Pair</code> else <code>false</code>
      */
     @Override
     public boolean equals(Object o) {
