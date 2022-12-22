@@ -11,15 +11,14 @@ import tools.Pair;
 
 public class Aoc2217 {
   static boolean TEST = true;
-  static boolean DEBUG = false;
   static int PART = 2;
+  static int Q_SIZE = 8;
+  static boolean BLOCK_CALCULATED = false;
 
-  static int QLIM = 3000;
+  static Map<String, Pair<Long, Integer>> knownStates = new HashMap<>();
+  static Queue<short[]> lastRows = new ArrayDeque<>();
 
   static long END = PART == 1 ? 2022L : 1_000_000_000_000L;
-  static long RESULT = 0;
-  static long BLOCK = 0;
-  static boolean DONE = false;
 
   static void print(short[][] field, long idx, int maxHeight) {
     int rows = 10;
@@ -76,25 +75,17 @@ public class Aoc2217 {
 
     short[][] field = new short[10][7];
     int maxHeight = 0;
-    int lastHeight = 0;
-    long maxHeightEnd = 0;
-
-    Queue<short[]> q = new ArrayDeque<>();
-
-    Map<String, Pair<Integer, Long>> states = new HashMap<>();
-
-    boolean loopFound = false;
+    int prevHeight;
+    long heightProduced = 0;
 
     while (true) {
       while (maxHeight + 10 >= field.length) {
         field = resize(field);
       }
-//      print(field, rocksIdx, maxHeight);
       int curx = 2;
       int cury = maxHeight + 3;
 
       short[][] shape = shapes[(int) (rocksIdx++ % rocksLen)];
-
       while (true) {
         int dir = jets.charAt(jetIdx++ % jetLen) == '>' ? 1 : -1;
 
@@ -109,6 +100,7 @@ public class Aoc2217 {
         if (canShift) {
           cury--;
         } else {
+          prevHeight = maxHeight;
           for (int i = 0; i < shape.length; i++) {
             for (int j = 0; j < shape[0].length; j++) {
               if (shape[i][j] > 0) {
@@ -118,55 +110,40 @@ public class Aoc2217 {
             }
           }
 
-          if (maxHeight >= QLIM) {
-            for (int i = lastHeight; i < maxHeight; i++) {
-              short[] r = new short[field[0].length];
-              System.arraycopy(field[i], 0, r, 0, field[0].length);
-              q.offer(r);
-            }
-            while (q.size() > QLIM) {
-              q.poll();
-            }
-
-            String cache = (rocksIdx % rocksLen) + "," + (jetIdx % jetLen) + q.stream().map(Arrays::toString).collect(Collectors.joining());
-
-            lastHeight = maxHeight;
-
-            if (!loopFound && !DONE) {
-              loopFound = states.containsKey(cache);
-              if (loopFound) {
-                BLOCK = maxHeight - states.get(cache).getKey();
-              } else {
-                states.put(cache, new Pair<>(maxHeight, rocksIdx));
-              }
-            }
-
-            if (loopFound && !DONE) {
-              if (DEBUG) {
-                System.out.println("Next loop iteration " + maxHeight);
-                System.out.println("Prev idx was " + states.get(cache));
-                System.out.println("Block size " + BLOCK);
-              }
-
-              long prevRockIdx = states.get(cache).getValue();
-              long loopsNum = END / (rocksIdx - prevRockIdx);
-              maxHeightEnd = loopsNum * BLOCK;
-              DONE = true;
-            }
+          for (int i = prevHeight; i < maxHeight; i++) {
+            lastRows.offer(field[i]);
           }
+          while (lastRows.size() > Q_SIZE) {
+            lastRows.poll();
+          }
+          if (lastRows.size() < Q_SIZE) {
+            break;
+          }
+          String cacheKey = jetIdx % jetLen + "_" + rocksIdx % rocksLen + "_" + lastRows.stream().map(Arrays::toString).collect(Collectors.joining());
+          if (!BLOCK_CALCULATED && knownStates.containsKey(cacheKey)) {
+            BLOCK_CALCULATED = true;
+            var dat = knownStates.get(cacheKey);
+            long blockSizeInRocks = rocksIdx - dat.getKey();
+            int blockSizeInHeight = maxHeight - 1 - dat.getValue();
+
+            long rocksBlockRequired = (END - rocksIdx) / blockSizeInRocks;
+            rocksIdx = rocksIdx + rocksBlockRequired * blockSizeInRocks;
+
+            heightProduced = rocksBlockRequired * blockSizeInHeight;
+          } else {
+            knownStates.put(cacheKey, new Pair<>(rocksIdx, maxHeight - 1));
+          }
+
           break;
         }
       }
 
-      if (rocksIdx + maxHeightEnd >= END) {
+      if (rocksIdx >= END) {
         break;
       }
     }
 
-    System.out.println(maxHeight);
-    System.out.println(maxHeightEnd);
-    System.out.println(rocksLen + maxHeightEnd);
-    System.out.println(RESULT);
+    System.out.println(maxHeight + heightProduced);
   }
 
   static boolean canShift(short[][] shape, short[][] field, int dirx, int diry, int curx, int cury) {
