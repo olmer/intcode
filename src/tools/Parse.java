@@ -9,25 +9,26 @@ import java.util.regex.Pattern;
 
 public class Parse {
   public static List<Integer> integers(String s) {
-    var pattern = Pattern.compile("-?\\d+");
-    var matcher = pattern.matcher(s);
-    var digits = new ArrayList<Integer>();
-    while (matcher.find()) {
-      digits.add(Integer.valueOf(matcher.group()));
-    }
-
-    return digits;
+    return regex(s, "-?\\d+").stream().map(Integer::valueOf).toList();
   }
 
   public static List<Long> longs(String s) {
-    var pattern = Pattern.compile("-?\\d+");
+    return regex(s, "-?\\d+").stream().map(Long::valueOf).toList();
+  }
+
+  public static List<Integer> digits(String s) {
+    return regex(s, "-?\\d").stream().map(Integer::valueOf).toList();
+  }
+
+  public static List<String> regex(String s, String p) {
+    var pattern = Pattern.compile(p);
     var matcher = pattern.matcher(s);
-    var digits = new ArrayList<Long>();
+    var res = new ArrayList<String>();
     while (matcher.find()) {
-      digits.add(Long.valueOf(matcher.group()));
+      res.add(matcher.group(1));
     }
 
-    return digits;
+    return res;
   }
 
   public static Map<String, String> map(String s) {
