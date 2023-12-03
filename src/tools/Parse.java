@@ -25,6 +25,16 @@ public class Parse {
     var matcher = pattern.matcher(s);
     var res = new ArrayList<String>();
     while (matcher.find()) {
+      res.add(matcher.group(0));
+    }
+
+    return res;
+  }
+  public static List<String> regexWithGroups(String s, String p) {
+    var pattern = Pattern.compile(p);
+    var matcher = pattern.matcher(s);
+    var res = new ArrayList<String>();
+    while (matcher.find()) {
       res.add(matcher.group(1));
     }
 
