@@ -12,7 +12,7 @@ public class Aoc2301 {
     long r =
       Arrays.stream(getInput()).map(s -> {
         var p = "(?=(one|two|three|four|five|six|seven|eight|nine|zero|\\d))";
-        List<Integer> nums = Parse.regex(s, p).stream().map(e ->
+        List<Integer> nums = Parse.regexWithGroups(s, p).stream().map(e ->
           Integer.parseInt(e
             .replace("one", "1")
             .replace("two", "2")
