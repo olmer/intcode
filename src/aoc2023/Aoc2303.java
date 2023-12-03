@@ -95,16 +95,6 @@ public class Aoc2303 {
         return true;
       }
     }
-    for (int i = -1; i <= 1; i++) {
-      for (int j = -1; j <= 1; j++) {
-        int ii = x + i;
-        int jj = y + j;
-        if (i == 0 && j == 0 || ii < 0 || jj < 0 || ii >= data[0].length() || jj >= data.length) {
-          continue;
-        }
-        char c = data[jj].charAt(ii);
-      }
-    }
     return false;
   }
 
