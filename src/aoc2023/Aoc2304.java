@@ -2,6 +2,7 @@ package aoc2023;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import tools.Parse;
@@ -10,23 +11,20 @@ public class Aoc2304 {
   static private final boolean TEST = true;
 
   public static void main(String[] args) {
-    int r = 0;
     String[] in = getInput();
     int[] cards = new int[in.length];
     Arrays.fill(cards, 1);
-    for (int rowidx = 0; rowidx < in.length; rowidx++) {
-      String row = in[rowidx];
-      var winners = Parse.integers(row.split(" \\| ")[0]);
-      var nums = Parse.integers(row.split(" \\| ")[1]);
-      Set<Integer> fnums = new HashSet<>(nums);
+    for (int currentCardIdx = 0; currentCardIdx < in.length; currentCardIdx++) {
+      List<Integer> winners = Parse.integers(in[currentCardIdx].split(" \\| ")[0]);
+      Set<Integer> myNumbers = new HashSet<>(Parse.integers(in[currentCardIdx].split(" \\| ")[1]));
       int wins = 0;
       for (int i = 1; i < winners.size(); i++) {
-        if (fnums.contains(winners.get(i))) {
+        if (myNumbers.contains(winners.get(i))) {
           wins++;
         }
       }
-      for (int i = rowidx + 1; i < rowidx + 1 + wins; i++) {
-        cards[i] += cards[rowidx];
+      for (int i = currentCardIdx + 1; i < currentCardIdx + 1 + wins; i++) {
+        cards[i] += cards[currentCardIdx];
       }
     }
     System.out.println(Arrays.stream(cards).sum());
