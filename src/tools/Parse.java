@@ -6,18 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Parse {
   public static List<Integer> integers(String s) {
-    return regex(s, "-?\\d+").stream().map(Integer::valueOf).toList();
+    return regex(s, "-?\\d+").stream().map(Integer::valueOf).collect(Collectors.toList());
   }
 
   public static List<Long> longs(String s) {
-    return regex(s, "-?\\d+").stream().map(Long::valueOf).toList();
+    return regex(s, "-?\\d+").stream().map(Long::valueOf).collect(Collectors.toList());
   }
 
   public static List<Integer> digits(String s) {
-    return regex(s, "-?\\d").stream().map(Integer::valueOf).toList();
+    return regex(s, "-?\\d").stream().map(Integer::valueOf).collect(Collectors.toList());
   }
 
   public static List<String> regex(String s, String p) {
