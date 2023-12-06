@@ -45,7 +45,7 @@ public class Range {
     List<Pair<Long, Long>> r = new ArrayList<>();
 
     if (isFirstFullyWithinSecond(minuend, subtrahend) || intersect(minuend, subtrahend).isEmpty()) {
-      return r;
+//      return r;
     }
 
     Pair<Long, Long> leftRange = new Pair<>(minuend.getKey(), subtrahend.getKey() - 1);

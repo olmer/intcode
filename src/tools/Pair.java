@@ -74,7 +74,7 @@ public class Pair<K, V> implements Serializable {
      */
     @Override
     public String toString() {
-      return key + "=" + value;
+      return "[" + key + ":" + value + "]";
     }
 
     /**
@@ -122,5 +122,13 @@ public class Pair<K, V> implements Serializable {
         return true;
       }
       return false;
+    }
+
+    public void setKey(K k) {
+      this.key = k;
+    }
+
+    public void setValue(V v) {
+      this.value = v;
     }
 }

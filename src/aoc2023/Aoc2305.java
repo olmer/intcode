@@ -3,8 +3,10 @@ package aoc2023;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 
 import tools.Pair;
 import tools.Parse;
+import tools.Range;
 
 public class Aoc2305 {
   static private final boolean TEST = true;
@@ -94,41 +97,61 @@ public class Aoc2305 {
   private static long part2WithRanges() {
     var input = getInput();
     var seeds = Parse.longs(input[0]);
-    var maps = Arrays.stream(input).map(map -> Arrays.stream(map.split("\n"))
-      .map(line -> !Parse.longs(line).isEmpty() ? Optional.of(Parse.longs(line)) : Optional.empty()).flatMap(Optional::stream).toList()
-    ).toList();
-
-
-    List<Pair<Long, Long>> ranges = new ArrayList<>();
+    List<List<List<Long>>> maps = Arrays.stream(input).map(e -> Arrays.stream(e.split("\n")).map(Parse::longs).collect(Collectors.toList())).collect(Collectors.toList());
+    maps.remove(0);
 
     for (int seedIdx = 0; seedIdx < seeds.size(); seedIdx += 2) {
-      ranges.add(new Pair<>(seeds.get(seedIdx), seeds.get(seedIdx) + seeds.get(seedIdx + 1)));
-    }
-    ranges.sort(Comparator.comparingLong(Pair::getKey));
+      int finalSeedIdx = seedIdx;
+      Set<Set<Pair<Long, Long>>> ranges = new HashSet<>();
+      ranges.add(new TreeSet<>(Comparator.comparingLong(Pair::getKey)) {{
+        add(new Pair<>(seeds.get(finalSeedIdx), seeds.get(finalSeedIdx) + seeds.get(finalSeedIdx + 1)));
+      }});
 
-    for (int i = 1; i < maps.size(); i++) {
-      var map = maps.get(i);
-
-      for (var range : ranges) {
-        for (var mapLine : map) {
-          var b = (long) ((List) mapLine).get(0);
-          var a = (long) ((List) mapLine).get(1);
-          var c = (long) ((List) mapLine).get(2);
+      for (List<List<Long>> map : maps) {
+        for (Set<Pair<Long, Long>> rangel : ranges) {
+          Set<Pair<Long, Long>> splittedRange = new TreeSet<>(Comparator.comparingLong(Pair::getKey));
+          boolean splitHappened = false;
+          for (var mapLine : map) {
+            if (mapLine.isEmpty()) continue;
+            var destinationDiff = mapLine.get(0) - mapLine.get(1);
+            var mapInterval = new Pair<>(mapLine.get(1), mapLine.get(1) + mapLine.get(2) - 1);
+            for (var range : rangel) {
+              var intersect = Range.intersect(range, mapInterval);
+              if (intersect.isEmpty()) {
+                continue;
+              }
+              splitHappened = true;
+              // match to map range happened, map and save
+              var ttt = doMap(intersect.get(), destinationDiff);
+              if (ttt.getValue() == 23738615) {
+                System.out.println("Adding weird range");
+              }
+              splittedRange.add(ttt);
+              // shrink/diff curr range here, no mapping happen
+              var tttt = Range.difference(range, mapInterval);
+              if (tttt.size() > 1 && (tttt.get(0).getValue() == 23738615 || tttt.get(1).getValue() == 23738615)) {
+                System.out.println("Adding weird range");
+              }
+              splittedRange.addAll(tttt);
+            }
+          }
+          if (!splitHappened) {
+            splittedRange.addAll(rangel);
+          }
+          rangel.clear();
+          rangel.addAll(splittedRange);
         }
+        var rrrrr = 2;
       }
+      var rrrr = 2;
     }
+    var rrr = 2;
     return 0L;
   }
 
   private static Pair<Long, Long> doMap(Pair<Long, Long> prev, long diff) {
     return new Pair<>(prev.getKey() + diff, prev.getValue() + diff);
   }
-
-  /*
-  51453 low
-  1627923 low
-  23738615
-   */
 
   private static String[] getInput() {
     String testStr = "seeds: 79 14 55 13\n" +
