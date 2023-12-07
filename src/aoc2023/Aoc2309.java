@@ -1,6 +1,6 @@
 package aoc2023;
 
-public class Aoc2308 {
+public class Aoc2309 {
 
   private static int part1(String[] input) {
     return 0;
