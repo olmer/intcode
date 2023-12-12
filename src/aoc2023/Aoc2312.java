@@ -42,19 +42,6 @@ public class Aoc2312 {
     return r;
   }
 
-  static Map<String, Map<List<Integer>, Long>> mem = new HashMap<>();
-
-  static Long get(String s, List<Integer> l) {
-    return mem.containsKey(s) && mem.get(s).containsKey(l)
-      ? mem.get(s).get(l)
-      : -1;
-  }
-
-  static void set(String s, List<Integer> l, long r) {
-    mem.putIfAbsent(s, new HashMap<>());
-    mem.get(s).put(l, r);
-  }
-
   private static long numberOfWays(String s, List<Integer> nums) {
     if (s.isEmpty()) {//string is empty, if nums are also empty that's a 1
       return nums.isEmpty() ? 1 : 0;
@@ -115,6 +102,19 @@ public class Aoc2312 {
 
     var p2 = part2(getInput(true));
     System.out.println("Part 2 test: " + p2 + (p2 == expected2 ? " PASSED" : " FAILED"));
+  }
+
+  static Map<String, Map<List<Integer>, Long>> mem = new HashMap<>();
+
+  static Long get(String s, List<Integer> l) {
+    return mem.containsKey(s) && mem.get(s).containsKey(l)
+      ? mem.get(s).get(l)
+      : -1;
+  }
+
+  static void set(String s, List<Integer> l, long r) {
+    mem.putIfAbsent(s, new HashMap<>());
+    mem.get(s).put(l, r);
   }
 
   public static void main(String[] args) {
