@@ -52,7 +52,7 @@ public class Grid {
     return r;
   }
 
-  private static Map<Direction, Pair<Integer, Integer>> getValidSpecificNeighbourCoordinatesMapped(int x, int y, String[] data, Direction... dirs) {
+  public static Map<Direction, Pair<Integer, Integer>> getValidSpecificNeighbourCoordinatesMapped(int x, int y, String[] data, Direction... dirs) {
     Map<Direction, Pair<Integer, Integer>> r = new HashMap<>();
     if (dirs == null) return r;
     for (Direction dir : dirs) {
