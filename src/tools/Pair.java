@@ -124,11 +124,13 @@ public class Pair<K, V> implements Serializable {
       return false;
     }
 
-    public void setKey(K k) {
+    public Pair<K, V> setKey(K k) {
       this.key = k;
+      return this;
     }
 
-    public void setValue(V v) {
+    public Pair<K, V> setValue(V v) {
       this.value = v;
+      return this;
     }
 }
