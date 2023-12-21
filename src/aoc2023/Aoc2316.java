@@ -67,7 +67,7 @@ public class Aoc2316 {
       char c = input[y].charAt(x);
       var intendedDirections = MIR.get(c).get(next.getKey());
 
-      for (var ne : Grid.getValidSpecificNeighbourCoordinatesMapped(x, y, input, intendedDirections).entrySet()) {
+      for (var ne : Grid.getValidNeighbourCoordinatesMapped(x, y, input, intendedDirections).entrySet()) {
         var intendedDirection = ne.getKey();
         var comingFrom = COMING_FOM_MAP.get(intendedDirection);
         var intendedX = ne.getValue().getKey();
@@ -124,7 +124,7 @@ public class Aoc2316 {
         char c = input[y].charAt(x);
         var intendedDirections = MIR.get(c).get(next.getKey());
 
-        for (var ne : Grid.getValidSpecificNeighbourCoordinatesMapped(x, y, input, intendedDirections).entrySet()) {
+        for (var ne : Grid.getValidNeighbourCoordinatesMapped(x, y, input, intendedDirections).entrySet()) {
           var intendedDirection = ne.getKey();
           var comingFrom = COMING_FOM_MAP.get(intendedDirection);
           var intendedX = ne.getValue().getKey();

@@ -47,7 +47,7 @@ public class Aoc2310 {
     int r = 0;
     ArrayDeque<Pair<Integer, Integer>> q = new ArrayDeque<>();
 
-    Grid.getValidSpecificNeighboursWithCoordsMapped(startx, starty, input, Grid.CARDINAL)
+    Grid.getValidNeighboursWithCoordsMapped(startx, starty, input, Grid.CARDINAL)
       .entrySet()
       .stream()
       .filter(entry -> CONNECTED_TO_ORIG.get(entry.getKey()).contains(entry.getValue().getKey()))
@@ -58,7 +58,7 @@ public class Aoc2310 {
       int size = q.size();
       while (size-- > 0) {
         var cur = q.poll();
-        Grid.getValidSpecificNeighboursWithCoordsMapped(cur.getKey(), cur.getValue(), input, Grid.CARDINAL).entrySet()
+        Grid.getValidNeighboursWithCoordsMapped(cur.getKey(), cur.getValue(), input, Grid.CARDINAL).entrySet()
           .stream()
           .filter(entry -> CONNECTED_TO.get(entry.getKey()).contains(entry.getValue().getKey()))
           .filter(entry -> {
@@ -152,7 +152,7 @@ public class Aoc2310 {
     final ArrayDeque<Pair<Integer, Integer>> q = new ArrayDeque<>();
 
     System.out.println("Main loop");
-    Grid.getValidSpecificNeighboursWithCoordsMapped(startx, starty, rawIn, Grid.CARDINAL)
+    Grid.getValidNeighboursWithCoordsMapped(startx, starty, rawIn, Grid.CARDINAL)
       .entrySet()
       .stream()
       .filter(entry -> CONNECTED_TO_ORIG.get(entry.getKey()).contains(entry.getValue().getKey()))
@@ -161,7 +161,7 @@ public class Aoc2310 {
       int size = q.size();
       while (size-- > 0) {
         var cur = q.poll();
-        Grid.getValidSpecificNeighboursWithCoordsMapped(cur.getKey(), cur.getValue(), rawIn, POSSIBLE_CONNECTIONS.get(rawIn[cur.getValue()].charAt(cur.getKey()))).entrySet()
+        Grid.getValidNeighboursWithCoordsMapped(cur.getKey(), cur.getValue(), rawIn, POSSIBLE_CONNECTIONS.get(rawIn[cur.getValue()].charAt(cur.getKey()))).entrySet()
           .stream()
           .filter(entry -> CONNECTED_TO_ORIG.get(entry.getKey()).contains(entry.getValue().getKey()))
           .filter(entry -> {
@@ -210,7 +210,7 @@ public class Aoc2310 {
 
     while (!q.isEmpty()) {
       var cur = q.poll();
-      Grid.getValidSpecificNeighboursWithCoordsMapped(cur.getKey(), cur.getValue(), expanded, Grid.CARDINAL).entrySet().stream()
+      Grid.getValidNeighboursWithCoordsMapped(cur.getKey(), cur.getValue(), expanded, Grid.CARDINAL).entrySet().stream()
         .filter(e -> e.getValue().getKey() == '.')
         .filter(e -> {var p = e.getValue().getValue(); return !flooded[p.getValue()][p.getKey()];})
         .forEach(e -> {

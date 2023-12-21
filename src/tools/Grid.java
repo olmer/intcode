@@ -16,30 +16,30 @@ public class Grid {
     return r;
   }
   public static List<Pair<Character, Pair<Integer, Integer>>> getValidNeighboursWithCoords(int x, int y, String[] data) {
-    return getValidSpecificNeighboursWithCoords(x, y, data, Direction.values());
+    return getValidNeighboursWithCoords(x, y, data, Direction.values());
   }
 
-  public static List<Pair<Character, Pair<Integer, Integer>>> getValidSpecificNeighboursWithCoords(int x, int y, String[] data, Direction... dirs) {
+  public static List<Pair<Character, Pair<Integer, Integer>>> getValidNeighboursWithCoords(int x, int y, String[] data, Direction... dirs) {
     List<Pair<Character, Pair<Integer, Integer>>> r = new ArrayList<>();
-    for (var coords : getValidSpecificNeighbourCoordinates(x, y, data, dirs)) {
+    for (var coords : getValidNeighbourCoordinates(x, y, data, dirs)) {
       r.add(new Pair<>(data[coords.getValue()].charAt(coords.getKey()), coords));
     }
     return r;
   }
 
-  public static Map<Direction, Pair<Character, Pair<Integer, Integer>>> getValidSpecificNeighboursWithCoordsMapped(int x, int y, String[] data, Direction... dirs) {
+  public static Map<Direction, Pair<Character, Pair<Integer, Integer>>> getValidNeighboursWithCoordsMapped(int x, int y, String[] data, Direction... dirs) {
     Map<Direction, Pair<Character, Pair<Integer, Integer>>> r = new HashMap<>();
-    for (var entry : getValidSpecificNeighbourCoordinatesMapped(x, y, data, dirs).entrySet()) {
+    for (var entry : getValidNeighbourCoordinatesMapped(x, y, data, dirs).entrySet()) {
       r.put(entry.getKey(), new Pair<>(data[entry.getValue().getValue()].charAt(entry.getValue().getKey()), entry.getValue()));
     }
     return r;
   }
 
   private static List<Pair<Integer, Integer>> getValidNeighbourCoordinates(int x, int y, String[] data) {
-    return getValidSpecificNeighbourCoordinates(x, y, data, Direction.values());
+    return getValidNeighbourCoordinates(x, y, data, Direction.values());
   }
 
-  private static List<Pair<Integer, Integer>> getValidSpecificNeighbourCoordinates(int x, int y, String[] data, Direction... dirs) {
+  private static List<Pair<Integer, Integer>> getValidNeighbourCoordinates(int x, int y, String[] data, Direction... dirs) {
     List<Pair<Integer, Integer>> r = new ArrayList<>();
     for (Direction dir : dirs) {
       int i = NEIGHBOURS.get(dir).getKey();
@@ -54,7 +54,7 @@ public class Grid {
     return r;
   }
 
-  public static Map<Direction, Pair<Integer, Integer>> getValidSpecificNeighbourCoordinatesMapped(int x, int y, String[] data, Direction... dirs) {
+  public static Map<Direction, Pair<Integer, Integer>> getValidNeighbourCoordinatesMapped(int x, int y, String[] data, Direction... dirs) {
     Map<Direction, Pair<Integer, Integer>> r = new HashMap<>();
     if (dirs == null) return r;
     for (Direction dir : dirs) {
