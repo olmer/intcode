@@ -47,6 +47,37 @@ public class ArrayGrid {
     return r;
   }
 
+  public List<Pair<Character, Pair<Integer, Integer>>> getValidNeighboursWithCoords(int x, int y) {
+    return getValidNeighboursWithCoords(x, y, Direction.values());
+  }
+
+  public List<Pair<Character, Pair<Integer, Integer>>> getValidNeighboursWithCoords(int x, int y, Direction... dirs) {
+    List<Pair<Character, Pair<Integer, Integer>>> r = new ArrayList<>();
+    for (var coords : getValidNeighbourCoordinates(x, y, dirs)) {
+      r.add(new Pair<>(data[coords.getValue()][coords.getKey()], coords));
+    }
+    return r;
+  }
+
+  private List<Pair<Integer, Integer>> getValidNeighbourCoordinates(int x, int y) {
+    return getValidNeighbourCoordinates(x, y, Direction.values());
+  }
+
+  private List<Pair<Integer, Integer>> getValidNeighbourCoordinates(int x, int y, Direction... dirs) {
+    List<Pair<Integer, Integer>> r = new ArrayList<>();
+    for (Direction dir : dirs) {
+      int i = NEIGHBOURS.get(dir).getKey();
+      int j = NEIGHBOURS.get(dir).getValue();
+      int ii = x + i;
+      int jj = y + j;
+      if (i == 0 && j == 0 || ii < 0 || jj < 0 || ii >= this.rows() || jj >= this.cols()) {
+        continue;
+      }
+      r.add(new Pair<>(ii, jj));
+    }
+    return r;
+  }
+
   public enum Direction {
     NW, N, NE, W, E, SW, S, SE
   }
@@ -74,5 +105,21 @@ public class ArrayGrid {
       s.append('\n');
     }
     return s.toString();
+  }
+
+  public int cols() {
+    return data[0].length;
+  }
+  public int rows() {
+    return data.length;
+  }
+  public char get(int x, int y) {
+    return data[y][x];
+  }
+  public void set(int x, int y, char c) {
+    data[y][x] = c;
+  }
+  public void set(Pair<Integer, Integer> coord, char c) {
+    set(coord.getKey(), coord.getValue(), c);
   }
 }
