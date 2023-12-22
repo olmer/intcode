@@ -149,7 +149,7 @@ public class Aoc2322 {
   }
 
   static int expected1 = 5;
-  static int expected2 = 0;
+  static int expected2 = 7;
   static String testStr = "1,0,1~1,2,1\n" +
     "0,0,2~2,0,2\n" +
     "0,2,3~2,2,3\n" +
