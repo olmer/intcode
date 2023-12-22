@@ -33,7 +33,6 @@ public class Aoc2321 {
         grid.set(next, '.');
       }
 
-//      System.out.println("step " + i + " size " + q.size());
       if (debug)
         print(grid);
     }
@@ -47,77 +46,40 @@ public class Aoc2321 {
   }
 
   private static long part2(String[] input) {
-    int LIM = 26501365;
-
+    int steps = 26501365;
+    int size = input.length;
+    int gridWidth = steps / size - 1;
+    long odd = (long)Math.pow(gridWidth / 2 * 2 + 1, 2);
+    long even = (long)Math.pow((gridWidth + 1) / 2 * 2, 2);
     int halfsize = input.length / 2;
-    int fullsize = input.length;
-    int fullminusone = fullsize - 1;
 
     ArrayGrid grid = new ArrayGrid(input);
+    long oddPoints = countFilled(halfsize, halfsize, size * 2 + 1, grid);
+    long evenPoints = countFilled(halfsize, halfsize, size * 2, grid);
+    long topCorner = countFilled(halfsize, size - 1, size - 1, grid);
+    long rightCorner = countFilled(0, halfsize, size - 1, grid);
+    long botCorner = countFilled(halfsize, 0, size - 1, grid);
+    long leftCorner = countFilled(size - 1, halfsize, size - 1, grid);
 
-    long fullGridResult = countFilled(halfsize, halfsize, fullsize, grid);//visited last corner, 7612
-//    long fullGridResult = 7574;
+    long smallTopRight = countFilled(0, size - 1, size / 2 - 1, grid);
+    long smallTopLeft = countFilled(size - 1, size - 1, size / 2 - 1, grid);
+    long smallBotRight = countFilled(0, 0, size / 2 - 1, grid);
+    long smallBotLeft = countFilled(size - 1, 0, size / 2 - 1, grid);
 
-    int stepsToFillGrid = input.length;
-    int cycles = LIM / stepsToFillGrid;
-
-//    debug = true;
-
-//    cycles = 3;
-
-    int remainderSteps = LIM % stepsToFillGrid;
-    remainderSteps = halfsize + 1;
-
-    int threequarters = fullsize + remainderSteps;
-
-//    halfsize = remainderSteps;
-
-    long fulls = 1;
-    long quarters = cycles;
-    long threeQuarters = cycles - 1;
-
-    long temp = 0;
-    for (int i = 0; i < cycles; i++) {
-      fulls += temp;
-      temp += 4;
-    }
-
-//    System.out.println("Half cycles: " + cycles);
-//    System.out.println("Full: " + fulls);
-//    System.out.println("Quarter: " + quarters * 4);
-//    System.out.println("Three quarters: " + threeQuarters * 4);
+    long bigTopRight = countFilled(0, size - 1, size * 3 / 2 - 1, grid);
+    long bigTopLeft = countFilled(size - 1, size - 1, size * 3 / 2 - 1, grid);
+    long bigBotRight = countFilled(0, 0, size * 3 / 2 - 1, grid);
+    long bigBotLeft = countFilled(size - 1, 0, size * 3 / 2 - 1, grid);
 
     long r = 0;
-
-    //619937159992774 small -> too small
-    //619937159992774 small with 3/4 as 195 -> too low
-    //623049717436686 full calc with 3/4 as 195 -> somewhere close!
-
-    //629512648645448
-    //629506623888950 -> not right
-    //619939468224364 -> not right
-    //619939489264008
-    //621494544278648
-
-
-
-//    var a = Long.MAX_VALUE > 623047466658012L;
-
-    r += fulls * fullGridResult;
-    r += quarters * countFilled(0, 0, remainderSteps, grid);
-    r += quarters * countFilled(0, fullminusone, remainderSteps, grid);
-    r += quarters * countFilled(fullminusone, 0, remainderSteps, grid);
-    r += quarters * countFilled(fullminusone, fullminusone, remainderSteps, grid);
-    r += threeQuarters * countFilled(0, 0, threequarters, grid);
-    r += threeQuarters * countFilled(0, fullminusone, threequarters, grid);
-    r += threeQuarters * countFilled(fullminusone, 0, threequarters, grid);
-    r += threeQuarters * countFilled(fullminusone, fullminusone, threequarters, grid);
-    r += countFilled(halfsize, 0, halfsize + remainderSteps, grid);
-    r += countFilled(0, halfsize, halfsize + remainderSteps, grid);
-    r += countFilled(halfsize, fullminusone, halfsize + remainderSteps, grid);
-    r += countFilled(fullminusone, halfsize, halfsize + remainderSteps, grid);
-
-//    System.out.println(countFilled(65, 65, 65, grid));
+    r += odd * oddPoints;
+    r += even * evenPoints;
+    r += topCorner;
+    r += rightCorner;
+    r += botCorner;
+    r += leftCorner;
+    r += (gridWidth + 1) * (smallTopRight + smallTopLeft + smallBotRight + smallBotLeft);
+    r += gridWidth * (bigTopRight + bigTopLeft + bigBotRight + bigBotLeft);
 
     return r;
   }
