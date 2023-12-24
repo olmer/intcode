@@ -12,6 +12,9 @@ public class Parse {
   public static List<Integer> integers(String s) {
     return regex(s, "-?\\d+").stream().map(Integer::valueOf).collect(Collectors.toList());
   }
+  public static List<Double> doubles(String s) {
+    return regex(s, "-?\\d+").stream().map(Double::valueOf).collect(Collectors.toList());
+  }
 
   public static List<Long> longs(String s) {
     return regex(s, "-?\\d+").stream().map(Long::valueOf).collect(Collectors.toList());
