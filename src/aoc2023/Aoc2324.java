@@ -61,18 +61,18 @@ public class Aoc2324 {
   Same applies to all other coordinates, for example Y:
   t = (Yh - Yr) / (Vyr - Vyh)
 
-  Since t is the same for all coordinates, we can equate right sides:
+  Since t is the same for all coordinates, we can equate right sides and get rid of the t:
   (Xh - Xr) / (Vxr - Vxh) = (Yh - Yr) / (Vyr - Vyh)
   equals to
   (Xh - Xr) * (Vyr - Vyh) = (Yh - Yr) * (Vxr - Vxh)
 
-  Now if we move all terms related to the rock left, we remain with:
+  Now if we move all the terms related to the rock to the left, we remain with:
   Yr * Vxr - Xr * Vyr = Yh * (Vxr - Vxh) - Xh * (Vyr - Vyh) - Xr * Vyh + Yr * Vxh
 
-  Since starting position and velocity of the rock we throw  is the same for all the hailstones,
-  Yr * Vxr - Xr * Vyr is the same for all of them.
+  Since starting position and velocity of the rock we throw is the same for all the hailstones,
+  Yr * Vxr - Xr * Vyr is the same for all of them, so we can ignore left side for now.
 
-  Therefore, we can introduce second hailstone, and equate right sides of first and second hailstones' equations:
+  Therefore, we can introduce the second hailstone, and equate right sides of first and second hailstones' equations:
   Yh1 * (Vxr - Vxh1) - Xh1 * (Vyr - Vyh1) - Xr * Vyh1 + Yr * Vxh1 = Yh2 * (Vxr - Vxh2) - Xh2 * (Vyr - Vyh2) - Xr * Vyh2 + Yr * Vxh2
 
   Now if we move to the right all known variables (hailstones positions and velocities),
@@ -86,9 +86,9 @@ public class Aoc2324 {
 
   We have 3 equations now, but we need 6. What's left to do is pick other pair of hailstones
   (we've picked hailstone 0 and 1, so we can take 1 and 2),
-  and create remaining 3 equations.
+  and create remaining 3 equations using exactly the same technique.
 
-  Now having all needed 6 equations for 6 unknowns, employ Gaussian elimination to calculate the puzzle result.
+  Having all needed 6 equations for 6 unknowns, employ Gaussian elimination to calculate the puzzle result.
   https://en.m.wikipedia.org/wiki/Gaussian_elimination
 
   6 equations created from problem example
