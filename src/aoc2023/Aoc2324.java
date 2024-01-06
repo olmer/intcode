@@ -44,16 +44,16 @@ public class Aoc2324 {
   }
 
   /*
-  To solve this we need to create system of linear equations. There are 6 unknowns: velocities and positions X, Y and Z of the rock we throw.
+  To solve this we need to create a system of linear equations. There are 6 unknowns: velocities and positions X, Y and Z of the rock we throw.
   We therefore need 6 equations (for 6 unknowns)
 
-  Start with the most important observation: for 2 object to intersect they need to be in the same place at the same time.
+  Start with the most important observation: for 2 objects to intersect they need to be in the same place at the same time.
   We start with only one coordinate - X. Let t be time of intersection. To calculate where the object will be in time t,
-  we add velocity * t to the positions: X + t * Vx
+  we add velocity * t to the position: X + t * Vx
 
   Now let's take 2 objects, their positions should be the same after time t to intersect with each other:
   Xr + t * Vxr = Xh + t * Vxh
-  where Xr is position X of the rock, t is time, Vxr is velocity X of the rock, Xh position of the hailstone, Vxh velocity X of the hailstone
+  where Xr is position X of the rock, t is time, Vxr - velocity X of the rock, Xh - position of the hailstone, Vxh - velocity X of the hailstone
 
   Extract t:
   t = (Xh - Xr) / (Vxr - Vxh)
@@ -61,30 +61,34 @@ public class Aoc2324 {
   Same applies to all other coordinates, for example Y:
   t = (Yh - Yr) / (Vyr - Vyh)
 
-  Since t is the same for all coordinates, we can equate right sides and get rid of the t:
+  Since t is the same for all the coordinates, we can equate right sides and get rid of the t:
   (Xh - Xr) / (Vxr - Vxh) = (Yh - Yr) / (Vyr - Vyh)
   equals to
   (Xh - Xr) * (Vyr - Vyh) = (Yh - Yr) * (Vxr - Vxh)
 
-  Now if we move all the terms related to the rock to the left, we remain with:
+  Now if we move all the terms related to the rock to the left, we have:
   Yr * Vxr - Xr * Vyr = Yh * (Vxr - Vxh) - Xh * (Vyr - Vyh) - Xr * Vyh + Yr * Vxh
 
   Since starting position and velocity of the rock we throw is the same for all the hailstones,
   Yr * Vxr - Xr * Vyr is the same for all of them, so we can ignore left side for now.
 
   Therefore, we can introduce the second hailstone, and equate right sides of first and second hailstones' equations:
-  Yh1 * (Vxr - Vxh1) - Xh1 * (Vyr - Vyh1) - Xr * Vyh1 + Yr * Vxh1 = Yh2 * (Vxr - Vxh2) - Xh2 * (Vyr - Vyh2) - Xr * Vyh2 + Yr * Vxh2
+  Yh1 * (Vxr - Vxh1) - Xh1 * (Vyr - Vyh1) - Xr * Vyh1 + Yr * Vxh1
+  =
+  Yh2 * (Vxr - Vxh2) - Xh2 * (Vyr - Vyh2) - Xr * Vyh2 + Yr * Vxh2
 
   Now if we move to the right all known variables (hailstones positions and velocities),
-  we will have unknowns and coefficients to the left.
-  Vxr * (Yh2 - Yh1) + Vyr * (Xh1 - Xh2) + Xr * (Vyh1 - Vyh2) + Yr * (Vxh2 - Vxh1) = Xh1 * Vyh1 - Yh1 * Vxh1  - Xh2 * Vyh2 + Yh2 * Vxh2
+  on the left remain the unknowns and their coefficients.
+  Vxr * (Yh2 - Yh1) + Vyr * (Xh1 - Xh2) + Xr * (Vyh1 - Vyh2) + Yr * (Vxh2 - Vxh1)
+  =
+  Xh1 * Vyh1 - Yh1 * Vxh1  - Xh2 * Vyh2 + Yh2 * Vxh2
 
-  Here right side is completely known and can be calculated, and left side has parts like Vxr * (Yh2 - Yh1),
+  Here the right side is completely known and can be calculated, and the left side has parts like Vxr * (Yh2 - Yh1),
   where Vxr is unknown, and coefficient can be calculated.
 
-  This is only 1 equation for coordinate pair X-Y, but we can do exactly the same thing for remaining 2 pairs: X-Z and Y-Z
+  This is only 1 equation for the coordinate pair X-Y, but we can do exactly the same thing for the remaining 2 pairs: X-Z and Y-Z
 
-  We have 3 equations now, but we need 6. What's left to do is pick other pair of hailstones
+  We have 3 equations now, but 6 are needed to solve the system. What's left to do is pick the other pair of hailstones
   (we've picked hailstone 0 and 1, so we can take 1 and 2),
   and create remaining 3 equations using exactly the same technique.
 
