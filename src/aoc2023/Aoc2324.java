@@ -1,5 +1,7 @@
 package aoc2023;
 
+import static tools.MathAoc.gaussianElimination;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -158,44 +160,6 @@ public class Aoc2324 {
     List<Double> result = gaussianElimination(matrix);
 
     return (long) (result.get(3) + result.get(4) + result.get(5));//only interested in positions
-  }
-
-  public static List<Double> gaussianElimination(double[][] matrix) {
-    int rows = matrix.length;
-    int cols = matrix[0].length - 1; // Exclude the augmented column
-
-    for (int i = 0; i < rows; i++) {
-      // Find pivot (largest number) for this column
-      int pivotRow = i;
-      for (int j = i + 1; j < rows; j++) {
-        if (Math.abs(matrix[j][i]) > Math.abs(matrix[pivotRow][i])) {
-          pivotRow = j;
-        }
-      }
-
-      // Swap rows
-      double[] temp = matrix[i];
-      matrix[i] = matrix[pivotRow];
-      matrix[pivotRow] = temp;
-
-      // Make the pivot element 1
-      double pivot = matrix[i][i];
-      for (int j = i; j <= cols; j++) {
-        matrix[i][j] /= pivot;
-      }
-
-      // Eliminate other rows
-      for (int j = 0; j < rows; j++) {
-        if (j != i) {
-          double factor = matrix[j][i];
-          for (int k = i; k <= cols; k++) {
-            matrix[j][k] -= factor * matrix[i][k];
-          }
-        }
-      }
-    }
-    //Take rightmost column which contains the answer
-    return Arrays.stream(matrix).map(e -> -e[e.length - 1]).toList();
   }
 
   private static double product(double[] posA, double[] posB, double[] velA, double[] velB, int idx1, int idx2) {
