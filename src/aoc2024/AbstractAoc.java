@@ -9,9 +9,9 @@ public abstract class AbstractAoc {
 
   abstract String getRealInput();
 
-  abstract long getRealExpected1();
+  abstract long getTestExpected1();
 
-  abstract long getRealExpected2();
+  abstract long getTestExpected2();
 
   public void start() {
     try {
@@ -25,10 +25,10 @@ public abstract class AbstractAoc {
 
   private void test() {
     var p1 = part1(getInput(true));
-    System.out.println("Part 1 test: " + p1 + (p1 == getRealExpected1() ? " PASSED" : " FAILED"));
+    System.out.println("Part 1 test: " + p1 + (p1 == getTestExpected1() ? " PASSED" : " FAILED"));
 
     var p2 = part2(getInput(true));
-    System.out.println("Part 2 test: " + p2 + (p2 == getRealExpected2() ? " PASSED" : " FAILED"));
+    System.out.println("Part 2 test: " + p2 + (p2 == getTestExpected2() ? " PASSED" : " FAILED"));
   }
 
   private String[] getInput(boolean isTest) {

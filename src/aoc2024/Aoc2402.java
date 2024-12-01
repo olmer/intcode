@@ -24,12 +24,12 @@ public class Aoc2402 extends AbstractAoc {
   }
 
   @Override
-  long getRealExpected1() {
+  long getTestExpected1() {
     return 0;
   }
 
   @Override
-  long getRealExpected2() {
+  long getTestExpected2() {
     return 0;
   }
 }
