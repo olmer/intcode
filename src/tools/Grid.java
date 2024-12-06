@@ -15,6 +15,7 @@ public class Grid {
     }
     return r;
   }
+
   public static List<Pair<Character, Pair<Integer, Integer>>> getValidNeighboursWithCoords(int x, int y, String[] data) {
     return getValidNeighboursWithCoords(x, y, data, Direction.values());
   }
@@ -100,13 +101,26 @@ public class Grid {
     return r;
   }
 
+  public static List<Pair<Integer, Integer>> find(String[] data, char c) {
+    List<Pair<Integer, Integer>> r = new ArrayList<>();
+    for (int i = 0; i < data.length; i++) {
+      for (int j = 0; j < data[i].length(); j++) {
+        if (data[i].charAt(j) == c) {
+          r.add(new Pair<>(j, i));
+        }
+      }
+    }
+
+    return r;
+  }
+
   public enum Direction {
     NW, N, NE, W, E, SW, S, SE
   }
 
   public static final Direction[] CARDINAL = {Direction.N, Direction.W, Direction.E, Direction.S};
 
-  public static Map<Direction, Direction> OPPOSITES = new HashMap<>(){{
+  public static Map<Direction, Direction> OPPOSITES = new HashMap<>() {{
     put(Direction.N, Direction.S);
     put(Direction.S, Direction.N);
     put(Direction.E, Direction.W);
@@ -114,12 +128,12 @@ public class Grid {
   }};
 
   public static Map<Direction, Direction[]> POSSIBLE_DIRS_LEFT_RIGHT = Arrays
-    .stream(Grid.CARDINAL)
-    .collect(Collectors.toMap(
-      ignored -> ignored,
-      cardinalDir -> Arrays.stream(Grid.CARDINAL)
-        .filter(ee -> ee != cardinalDir && ee != OPPOSITES.get(cardinalDir)).toArray(Direction[]::new)
-    ));
+      .stream(Grid.CARDINAL)
+      .collect(Collectors.toMap(
+          ignored -> ignored,
+          cardinalDir -> Arrays.stream(Grid.CARDINAL)
+              .filter(ee -> ee != cardinalDir && ee != OPPOSITES.get(cardinalDir)).toArray(Direction[]::new)
+      ));
 
   public static final Map<Direction, Pair<Integer, Integer>> NEIGHBOURS = new HashMap<>() {{
     put(Direction.NW, new Pair<>(-1, -1));
