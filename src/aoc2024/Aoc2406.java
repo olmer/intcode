@@ -64,13 +64,14 @@ public class Aoc2406 extends AbstractAoc {
         sb.setCharAt(j, '#');
         in[i] = sb.toString();
 
-        //start main logic
+        // start main traverse and loop detection
         Pair<Integer, Integer> pos = Grid.find(originalin, '^').get(0);
         Direction[] order = {Direction.N, Direction.E, Direction.S, Direction.W};
         int curdir = 0;
         boolean[][] visited = new boolean[originalin.length][originalin[0].length()];
         visited[pos.getValue()][pos.getKey()] = true;
 
+        // store directions from where we visited a cell in a hashset
         Set<Integer>[][] dirs = new HashSet[originalin.length][originalin[0].length()];
         for (int m = 0; m < dirs.length; m++) {
           for (int n = 0; n < dirs[m].length; n++) {
@@ -79,16 +80,18 @@ public class Aoc2406 extends AbstractAoc {
         }
         dirs[pos.getValue()][pos.getKey()].add(0);
 
+        // traversal
         boolean loopFound = false;
         while (true) {
           List<Pair<Character, Pair<Integer, Integer>>> beam = Grid.getBeams(pos.getKey(), pos.getValue(), in, in.length, order[curdir]).get(order[curdir]);
-          boolean endFound = false;
+          boolean guardGoesOutOfField = true;
           for (Pair<Character, Pair<Integer, Integer>> p : beam) {
             if (p.getKey() == '#') {
-              endFound = true;
+              guardGoesOutOfField = false;
               break;
             }
             if (visited[p.getValue().getValue()][p.getValue().getKey()]) {
+              // we visit a cell that we already visited and from the same direction
               if (dirs[p.getValue().getValue()][p.getValue().getKey()].contains(curdir)) {
                 r++;
                 loopFound = true;
@@ -100,7 +103,7 @@ public class Aoc2406 extends AbstractAoc {
             dirs[pos.getValue()][pos.getKey()].add(curdir);
           }
 
-          if (!endFound || loopFound) {
+          if (guardGoesOutOfField || loopFound) {
             break;
           }
 
