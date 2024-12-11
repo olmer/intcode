@@ -25,9 +25,9 @@ public class Aoc2411 extends AbstractAoc {
       return cache.get(cacheKey);
     }
     long result = 0;
-    if (stepsRemaining == 0) {
+    if (stepsRemaining == 0) { // base case
       result = 1;
-    } else {
+    } else { // split the stone, and iterate over the new stones with one less step remaining
       for (String stoneAfterSplit : splitStone(stone)) {
         result += doSteps(stoneAfterSplit, stepsRemaining - 1);
       }
