@@ -18,6 +18,7 @@ public class Aoc2411 extends AbstractAoc {
     return Arrays.stream(in[0].split(" ")).map(s -> doSteps(s, 75)).mapToLong(Long::longValue).sum();
   }
 
+  // How many stones will the current stone split into after N steps?
   long doSteps(String stone, int stepsRemaining) {
     Pair<String, Integer> cacheKey = new Pair<>(stone, stepsRemaining);
     if (cache.containsKey(cacheKey)) {
