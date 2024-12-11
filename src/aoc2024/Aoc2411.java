@@ -18,8 +18,8 @@ public class Aoc2411 extends AbstractAoc {
     return Arrays.stream(in[0].split(" ")).map(s -> doSteps(s, 75)).mapToLong(Long::longValue).sum();
   }
 
-  long doSteps(String s, int stepsRemaining) {
-    Pair<String, Integer> cacheKey = new Pair<>(s, stepsRemaining);
+  long doSteps(String stone, int stepsRemaining) {
+    Pair<String, Integer> cacheKey = new Pair<>(stone, stepsRemaining);
     if (cache.containsKey(cacheKey)) {
       return cache.get(cacheKey);
     }
@@ -27,8 +27,8 @@ public class Aoc2411 extends AbstractAoc {
     if (stepsRemaining == 0) {
       result = 1;
     } else {
-      for (String st : splitStone(s)) {
-        result += doSteps(st, stepsRemaining - 1);
+      for (String stoneAfterSplit : splitStone(stone)) {
+        result += doSteps(stoneAfterSplit, stepsRemaining - 1);
       }
     }
     cache.put(cacheKey, result);
