@@ -27,8 +27,7 @@ public class Aoc2411 extends AbstractAoc {
     if (stepsRemaining == 0) {
       result = 1;
     } else {
-      List<String> stones = splitStone(s);
-      for (String st : stones) {
+      for (String st : splitStone(s)) {
         result += doSteps(st, stepsRemaining - 1);
       }
     }
