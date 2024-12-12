@@ -1,60 +1,100 @@
 package aoc2015;
 
-public class Aoc1508 {
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+public class Aoc1509 {
 
   private static long part1(String[] input) {
-    long r = 0;
+    Map<String, Set<String>> adjMap = new HashMap<>();
+    Map<Set<String>, Integer> weights = new HashMap<>();
     for (String in : input) {
-      r += in.length();
-      int l = 0;
-      for (int i = 0; i < in.length(); i++) {
-        switch (in.charAt(i)) {
-          case '\\' -> {
-            switch (in.charAt(i + 1)) {
-              case 'x' -> {
-                l++;
-                i += 3;
-              }
-              default -> {
-                l++;
-                i++;
-              }
-            }
-          }
-          case '"' -> {}
-          default -> l++;
-        }
+      String[] parts = in.split(" ");
+      String a = parts[0];
+      String b = parts[2];
+      int w = Integer.parseInt(parts[4]);
+      if (!adjMap.containsKey(a)) {
+        adjMap.put(a, new HashSet<>());
       }
-      r -= l;
+      if (!adjMap.containsKey(b)) {
+        adjMap.put(b, new HashSet<>());
+      }
+      adjMap.get(a).add(b);
+      adjMap.get(b).add(a);
+      weights.put(Set.of(a, b), w);
+    }
+    long r = Long.MAX_VALUE;
+
+    for (String start : adjMap.keySet()) {
+      Set<String> visited = new HashSet<>();
+      visited.add(start);
+      r = Math.min(r, dfs(adjMap, weights, visited, start));
+    }
+
+    return r;
+  }
+
+  private static long dfs(Map<String, Set<String>> adjMap, Map<Set<String>, Integer> weights, Set<String> visited, String node) {
+    if (visited.size() == adjMap.size()) {
+      return 0;
+    }
+    long r = Long.MAX_VALUE;
+    for (String next : adjMap.get(node)) {
+      if (visited.contains(next)) {
+        continue;
+      }
+      visited.add(next);
+      r = Math.min(r, weights.get(Set.of(node, next)) + dfs(adjMap, weights, visited, next));
+      visited.remove(next);
     }
     return r;
   }
 
   private static long part2(String[] input) {
-    long r = 0;
-    long f = 0;
+    Map<String, Set<String>> adjMap = new HashMap<>();
+    Map<Set<String>, Integer> weights = new HashMap<>();
     for (String in : input) {
-      r += in.length();
-      f += in.length();
-      for (int i = 0; i < in.length(); i++) {
-        switch (in.charAt(i)) {
-          case '\\' -> {
-            f++;
-            switch (in.charAt(i + 1)) {
-              case 'x' -> {
-              }
-              default -> {
-                f++;
-                i++;
-              }
-            }
-          }
-          case '"' -> {f += 2;}
-          default -> {}
-        }
+      String[] parts = in.split(" ");
+      String a = parts[0];
+      String b = parts[2];
+      int w = Integer.parseInt(parts[4]);
+      if (!adjMap.containsKey(a)) {
+        adjMap.put(a, new HashSet<>());
       }
+      if (!adjMap.containsKey(b)) {
+        adjMap.put(b, new HashSet<>());
+      }
+      adjMap.get(a).add(b);
+      adjMap.get(b).add(a);
+      weights.put(Set.of(a, b), w);
     }
-    return f - r;
+    long r = Long.MIN_VALUE;
+
+    for (String start : adjMap.keySet()) {
+      Set<String> visited = new HashSet<>();
+      visited.add(start);
+      r = Math.max(r, dfsl(adjMap, weights, visited, start));
+    }
+
+    return r;
+  }
+
+  private static long dfsl(Map<String, Set<String>> adjMap, Map<Set<String>, Integer> weights, Set<String> visited, String node) {
+    if (visited.size() == adjMap.size()) {
+      return 0;
+    }
+    long r = Long.MIN_VALUE;
+    for (String next : adjMap.get(node)) {
+      if (visited.contains(next)) {
+        continue;
+      }
+      visited.add(next);
+      r = Math.max(r, weights.get(Set.of(node, next)) + dfsl(adjMap, weights, visited, next));
+      visited.remove(next);
+    }
+    return r;
   }
 
   private static void test() {
@@ -75,15 +115,13 @@ public class Aoc1508 {
     return (isTest ? testStr : realStr).split("\n");
   }
 
-  static int expected1 = 2;
-  static int expected2 = 47;
+  static int expected1 = 605;
+  static int expected2 = 982;
 
-  static String testStr = "\"\"\n" +
-    "\"abc\"\n" +
-    "\"aaa\\\"aaa\"\n" +
-    "\"\\x27\"";
-  static String realStr = "\"\"\n" +
-    "\"abc\"\n" +
-    "\"aaa\\\"aaa\"\n" +
-    "\"\\x27\"";
+  static String testStr = "London to Dublin = 464\n" +
+      "London to Belfast = 518\n" +
+      "Dublin to Belfast = 141";
+  static String realStr = "London to Dublin = 464\n" +
+      "London to Belfast = 518\n" +
+      "Dublin to Belfast = 141";
 }
