@@ -1,6 +1,6 @@
 package aoc2024;
 
-public class Aoc2413 extends AbstractAoc {
+public class Aoc2415 extends AbstractAoc {
   long part1(String[] in) {
     return 0;
   }
@@ -10,7 +10,7 @@ public class Aoc2413 extends AbstractAoc {
   }
 
   public static void main(String[] args) {
-    (new Aoc2413()).start();
+    (new Aoc2415()).start();
   }
 
   @Override
