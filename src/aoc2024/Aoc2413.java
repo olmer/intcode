@@ -81,7 +81,9 @@ public class Aoc2413 extends AbstractAoc {
       System.out.println("Rule #" + p);
       boolean finalSolutionFound = false;
       Rule r = rules.get(p);
-
+      if (r.x % gcd(r.ax, r.bx) != 0 || r.y % gcd(r.ay, r.by) != 0) {
+        continue;
+      }
       long clicksB = r.y / r.by();
 
       long remainingYScoreToFillByA = r.y - clicksB * r.by();
