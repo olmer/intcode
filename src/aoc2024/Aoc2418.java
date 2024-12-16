@@ -99,14 +99,12 @@ public class Aoc2418 extends AbstractAoc {
 
     while (!q.isEmpty()) {
       Node n = q.poll();
-      if (n.row == endRow && n.col == endCol) {
+      if (n.row == endRow && n.col == endCol && n.cost <= bestCost) {
         if (n.cost < bestCost) {
           bestCost = n.cost;
           bestPaths.clear();
-          bestPaths.add(n.path);
-        } else if (n.cost == bestCost) {
-          bestPaths.add(n.path);
         }
+        bestPaths.add(n.path);
       }
       Grid.Direction[] canGo = Arrays.stream(Grid.CARDINAL).filter(d -> d != Grid.OPPOSITES.get(n.facing)).toArray(Grid.Direction[]::new);
       Grid.getValidNeighboursWithCoordsMapped(n.col, n.row, in, canGo).forEach((dir, neigh) -> {
