@@ -1,7 +1,6 @@
 package aoc2024;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,14 +8,12 @@ import tools.Parse;
 
 public class Aoc2417 extends AbstractAoc {
   long part1(String[] in) {
-    String inin = Arrays.stream(in).collect(Collectors.joining("\n"));
-    int A;
-    String regs = inin.split("\n\n")[0];
-    A = Parse.integers(regs.split("\n")[0]).get(0);
+    String regs = String.join("\n", in).split("\n\n")[0];
+    int A = Parse.integers(regs.split("\n")[0]).get(0);
+    List<Long> program = Parse.longs(String.join("\n", in).split("\n\n")[1]);
+    List<Long> executionResult = execute(A, program);
 
-    List<Long> p = Parse.longs(inin.split("\n\n")[1]);
-    System.out.println(execute(A, p));
-    return 0;
+    return Long.parseLong(executionResult.stream().map(String::valueOf).collect(Collectors.joining("")));
   }
 
   long success = Long.MAX_VALUE;
@@ -32,11 +29,8 @@ public class Aoc2417 extends AbstractAoc {
   jump to 0 if a != 0
    */
   long part2(String[] in) {
-    long start = System.currentTimeMillis();
-    String inin = Arrays.stream(in).collect(Collectors.joining("\n"));
-    List<Long> program = Parse.longs(inin.split("\n\n")[1]);
+    List<Long> program = Parse.longs(String.join("\n", in).split("\n\n")[1]);
     dfs(program, 0, 0);
-    System.out.println("Time: " + (System.currentTimeMillis() - start) + "ms");
     return success;
   }
 
@@ -55,13 +49,10 @@ public class Aoc2417 extends AbstractAoc {
     }
   }
 
-  List<Long> execute(long a, List<Long> p) {
-    long A, B, C;
+  List<Long> execute(long A, List<Long> p) {
     int pointer = 0;
     List<Long> output = new ArrayList<>();
-    A = a;
-    B = 0;
-    C = 0;
+    long B = 0, C = 0;
     while (pointer >= 0 && pointer < p.size()) {
       long opcode = p.get(pointer);
       long literalOperand = p.get(pointer + 1);
