@@ -22,9 +22,9 @@ public class Aoc2417 extends AbstractAoc {
   b = a % 8           // take lower 3 bits of a
   b = b ^ 3           // inverts lower 2 bits of b
   c = a / (2 ** b)    // remove lower B bits of A and copy to C
-  a = a / (2 ** b)    // remove lower 3 bits of A
-  b = c ^ b           // XORs last b bits of c
-  b = b ^ 5 ( 101 )   // inverts first and last bits of 3 bits of b
+  a = a / (2 ** 3)    // remove lower 3 bits of A
+  b = c ^ b           // c XOR b
+  b = b ^ 5           // inverts first and last bits of 3 bits of b
   output lower 3 bits of b
   jump to 0 if a != 0
    */
