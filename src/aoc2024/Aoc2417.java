@@ -11,7 +11,7 @@ public class Aoc2417 extends AbstractAoc {
     String regs = String.join("\n", in).split("\n\n")[0];
     int A = Parse.integers(regs.split("\n")[0]).get(0);
     List<Long> program = Parse.longs(String.join("\n", in).split("\n\n")[1]);
-    List<Long> executionResult = execute(A, program);
+    List<Long> executionResult = execProgram(A, program);
 
     return Long.parseLong(executionResult.stream().map(String::valueOf).collect(Collectors.joining("")));
   }
@@ -37,7 +37,7 @@ public class Aoc2417 extends AbstractAoc {
   void dfs(List<Long> program, long cur, int pos) {
     for (int i = 0; i < 8; i++) {
       long nextNum = (cur << 3) + i;
-      List<Long> execResult = execute(nextNum, program);
+      List<Long> execResult = execProgram(nextNum, program);
       if (!execResult.equals(program.subList(program.size() - pos - 1, program.size()))) {
         continue;
       }
@@ -49,13 +49,13 @@ public class Aoc2417 extends AbstractAoc {
     }
   }
 
-  List<Long> execute(long A, List<Long> p) {
+  List<Long> execProgram(long A, List<Long> program) {
     int pointer = 0;
     List<Long> output = new ArrayList<>();
     long B = 0, C = 0;
-    while (pointer >= 0 && pointer < p.size()) {
-      long opcode = p.get(pointer);
-      long literalOperand = p.get(pointer + 1);
+    while (pointer >= 0 && pointer < program.size()) {
+      long opcode = program.get(pointer);
+      long literalOperand = program.get(pointer + 1);
       long combo = literalOperand < 4 ? literalOperand : (literalOperand == 4 ? A : (literalOperand == 5 ? B : C));
       switch ((int) opcode) {
         case 0:
