@@ -35,12 +35,12 @@ public class Aoc2417 extends AbstractAoc {
     long start = System.currentTimeMillis();
     String inin = Arrays.stream(in).collect(Collectors.joining("\n"));
     List<Long> program = Parse.longs(inin.split("\n\n")[1]);
-    backtrack(program, 0, 0);
+    dfs(program, 0, 0);
     System.out.println("Time: " + (System.currentTimeMillis() - start) + "ms");
     return success;
   }
 
-  void backtrack(List<Long> program, long cur, int pos) {
+  void dfs(List<Long> program, long cur, int pos) {
     for (int i = 0; i < 8; i++) {
       long nextNum = (cur << 3) + i;
       List<Long> execResult = execute(nextNum, program);
@@ -51,7 +51,7 @@ public class Aoc2417 extends AbstractAoc {
         success = Math.min(success, nextNum);
         return;
       }
-      backtrack(program, nextNum, pos + 1);
+      dfs(program, nextNum, pos + 1);
     }
   }
 
