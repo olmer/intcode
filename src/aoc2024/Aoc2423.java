@@ -46,21 +46,6 @@ public class Aoc2423 extends AbstractAoc {
 
     for (String nodeToInsertIfConnectedToAll : allNodes) {
       groups.computeIfAbsent(nodeToInsertIfConnectedToAll, _ -> new HashSet<>());
-      for (Entry<String, Set<String>> next : groups.entrySet()) {
-        if (next.getKey() == nodeToInsertIfConnectedToAll) {
-          continue;
-        }
-        boolean isConnectedToAll = true;
-        for (String n : next.getValue()) {
-          if (!adjMap.get(nodeToInsertIfConnectedToAll).contains(n)) {
-            isConnectedToAll = false;
-            break;
-          }
-        }
-        if (isConnectedToAll && adjMap.get(next.getKey()).contains(nodeToInsertIfConnectedToAll)) {
-          next.getValue().add(nodeToInsertIfConnectedToAll);
-        }
-      }
     }
 
     for (String nodeToInsertIfConnectedToAll : allNodes) {
