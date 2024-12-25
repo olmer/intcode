@@ -11,9 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/*
-template
- */
 public class Aoc2424 extends AbstractAoc {
   long part1(String[] in) {
     String[] init = Arrays.stream(in).collect(Collectors.joining("\n")).split("\n\n")[0].split("\n");
