@@ -183,13 +183,12 @@ public class Aoc2421 extends AbstractAoc {
       return cache.get(move).get(depth);
     }
     long best = Long.MAX_VALUE;
-    List<List<String>> sss = allPossiblePaths(move, 'A');
-    List<List<String>> allCombs = new ArrayList<>();
-    generateCombinations(sss, 0, new ArrayList<>(), allCombs);
-    for (List<String> comb : allCombs) {
+    List<List<String>> allPaths = new ArrayList<>();
+    generateCombinations(allPossiblePaths(move, 'A'), 0, new ArrayList<>(), allPaths);
+    for (List<String> path : allPaths) {
       long sum = 0;
-      for (String s : comb) {
-        sum += calculateLength(s, depth - 1);
+      for (String splitByASubPath : path) {
+        sum += calculateLength(splitByASubPath, depth - 1);
       }
       best = Math.min(best, sum);
     }
