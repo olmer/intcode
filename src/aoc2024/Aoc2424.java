@@ -24,8 +24,8 @@ public class Aoc2424 extends AbstractAoc {
     Map<String, Gate> gateMap = Arrays.stream(gates).map(s -> {
       String[] parts = s.split(" ");
       Gate gate = new Gate(parts[1], parts[0], parts[2], parts[4]);
-      gatesByWire.computeIfAbsent(gate.in1, _ -> new HashSet<>()).add(gate);
-      gatesByWire.computeIfAbsent(gate.in2, _ -> new HashSet<>()).add(gate);
+      gatesByWire.computeIfAbsent(gate.in1, a -> new HashSet<>()).add(gate);
+      gatesByWire.computeIfAbsent(gate.in2, a -> new HashSet<>()).add(gate);
       if (wires.containsKey(gate.in1) && wires.containsKey(gate.in2)) {
         initGates.add(gate);
       }
@@ -113,8 +113,8 @@ public class Aoc2424 extends AbstractAoc {
     Map<String, Gate> gateMap = Arrays.stream(gates).map(s -> {
       String[] parts = s.split(" ");
       Gate gate = new Gate(parts[1], parts[0], parts[2], parts[4]);
-      gatesByWire.computeIfAbsent(gate.in1, _ -> new HashSet<>()).add(gate);
-      gatesByWire.computeIfAbsent(gate.in2, _ -> new HashSet<>()).add(gate);
+      gatesByWire.computeIfAbsent(gate.in1, a -> new HashSet<>()).add(gate);
+      gatesByWire.computeIfAbsent(gate.in2, a -> new HashSet<>()).add(gate);
       wires.put(gate.out, 0);
       return gate;
     }).collect(Collectors.toMap(g -> g.out, g -> g));

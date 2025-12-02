@@ -16,7 +16,7 @@ public abstract class AbstractAoc {
   public void start() {
     try {
       test();
-//      System.out.println(part1(getInput(false)));
+      System.out.println(part1(getInput(false)));
       System.out.println(part2(getInput(false)));
     } catch (Exception e) {
       e.printStackTrace();
@@ -24,8 +24,8 @@ public abstract class AbstractAoc {
   }
 
   private void test() {
-//    var p1 = part1(getInput(true));
-//    System.out.println("Part 1 test: " + p1 + (p1 == getTestExpected1() ? " PASSED" : " FAILED"));
+    var p1 = part1(getInput(true));
+    System.out.println("Part 1 test: " + p1 + (p1 == getTestExpected1() ? " PASSED" : " FAILED"));
 
     var p2 = part2(getInput(true));
     System.out.println("Part 2 test: " + p2 + (p2 == getTestExpected2() ? " PASSED" : " FAILED"));

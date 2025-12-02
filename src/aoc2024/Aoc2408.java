@@ -29,7 +29,7 @@ public class Aoc2408 extends AbstractAoc {
               res.add(new Pair<>(zonex2, zoney2));
             }
           }
-          antennas.computeIfAbsent(c, _ -> new HashSet<>()).add(new Pair<>(x, y));
+          antennas.computeIfAbsent(c, a -> new HashSet<>()).add(new Pair<>(x, y));
         }
       }
     }
@@ -65,7 +65,7 @@ public class Aoc2408 extends AbstractAoc {
               zoney2 += diffy;
             }
           }
-          antennas.computeIfAbsent(c, _ -> new HashSet<>()).add(new Pair<>(x, y));
+          antennas.computeIfAbsent(c, a -> new HashSet<>()).add(new Pair<>(x, y));
         }
       }
     }

@@ -45,11 +45,11 @@ public class Aoc2423 extends AbstractAoc {
     Map<String, Set<String>> groups = new HashMap();
 
     for (String nodeToInsertIfConnectedToAll : allNodes) {
-      groups.computeIfAbsent(nodeToInsertIfConnectedToAll, _ -> new HashSet<>());
+      groups.computeIfAbsent(nodeToInsertIfConnectedToAll, a -> new HashSet<>());
     }
 
     for (String nodeToInsertIfConnectedToAll : allNodes) {
-      groups.computeIfAbsent(nodeToInsertIfConnectedToAll, _ -> new HashSet<>());
+      groups.computeIfAbsent(nodeToInsertIfConnectedToAll, a -> new HashSet<>());
       for (Entry<String, Set<String>> next : groups.entrySet()) {
         if (next.getKey() == nodeToInsertIfConnectedToAll) {
           continue;
