@@ -4,14 +4,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import tools.ArrayGrid;
-import tools.ArrayGrid.Direction;
+import tools.MutableGrid;
+import tools.MutableGrid.Direction;
 import tools.Pair;
 
 public class Aoc2314 {
 
   private static long part1(String[] input) {
-    var grid = new ArrayGrid(input);
+    var grid = new MutableGrid(input);
     var rocks = grid.find('O');
     Pair<Integer, Integer> newCoord;
     for (int i = 0; i < rocks.size(); i++) {
@@ -32,7 +32,7 @@ public class Aoc2314 {
   private static long part2(String[] input) {
     // Order to roll stones
     // N W S E
-    ArrayGrid grid = new ArrayGrid(input);
+    MutableGrid grid = new MutableGrid(input);
     List<Pair<Integer, Integer>> rocks = grid.find('O');
     Pair<Integer, Integer> newCoord = new Pair<>(0, 0);
 
@@ -67,7 +67,7 @@ public class Aoc2314 {
     return rocks.stream().map(e -> e.getValue()).reduce(0, (acc, cur) -> acc + input.length - cur);
   }
 
-  private static void roll(List<Pair<Integer, Integer>> rocks, Pair<Integer, Integer> newCoord, ArrayGrid grid, Direction dir) {
+  private static void roll(List<Pair<Integer, Integer>> rocks, Pair<Integer, Integer> newCoord, MutableGrid grid, Direction dir) {
     for (int i = 0; i < rocks.size(); i++) {
       while (true) {
         newCoord = grid.move(rocks.get(i), dir);

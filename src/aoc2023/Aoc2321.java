@@ -2,14 +2,14 @@ package aoc2023;
 
 import java.util.ArrayDeque;
 
-import tools.ArrayGrid;
+import tools.MutableGrid;
 import tools.Pair;
 
 public class Aoc2321 {
 
   static boolean debug = false;
 
-  private static long countFilled(int x, int y, int lim, ArrayGrid grid) {
+  private static long countFilled(int x, int y, int lim, MutableGrid grid) {
     ArrayDeque<Pair<Integer, Integer>> q = new ArrayDeque<>();
     q.offer(new Pair<>(x, y));
 
@@ -21,7 +21,7 @@ public class Aoc2321 {
         var neigs = grid.getValidNeighboursWithCoords(
           next.getKey(),
           next.getValue(),
-          ArrayGrid.CARDINAL
+          MutableGrid.CARDINAL
         );
         for (var neig : neigs) {
           if (neig.getKey() == '#') continue;
@@ -40,7 +40,7 @@ public class Aoc2321 {
   }
 
   private static long part1(String[] inputString) {
-    ArrayGrid grid = new ArrayGrid(inputString);
+    MutableGrid grid = new MutableGrid(inputString);
 
     return countFilled(inputString.length / 2, inputString.length / 2, 64, grid);
   }
@@ -53,7 +53,7 @@ public class Aoc2321 {
     long even = (long)Math.pow((gridWidth + 1) / 2 * 2, 2);
     int halfsize = input.length / 2;
 
-    ArrayGrid grid = new ArrayGrid(input);
+    MutableGrid grid = new MutableGrid(input);
     long oddPoints = countFilled(halfsize, halfsize, size * 2 + 1, grid);
     long evenPoints = countFilled(halfsize, halfsize, size * 2, grid);
     long topCorner = countFilled(halfsize, size - 1, size - 1, grid);
@@ -84,7 +84,7 @@ public class Aoc2321 {
     return r;
   }
 
-  private static void print(ArrayGrid input) {
+  private static void print(MutableGrid input) {
     System.out.println(input);
   }
 

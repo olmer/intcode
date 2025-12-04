@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ArrayGrid {
+public class MutableGrid {
   private static char EMPTY_TILE = '.';
   private static Set<Character> WALKABLE = Set.of('.');
   private static Set<Character> NOT_WALKABLE = Set.of('O', '#');
 
   private char[][] data;
 
-  public ArrayGrid(String[] input) {
+  public MutableGrid(String[] input) {
     data = Arrays.stream(input).map(String::toCharArray).toArray(char[][]::new);
   }
 
@@ -47,8 +47,12 @@ public class ArrayGrid {
     return r;
   }
 
-  public List<Pair<Character, Pair<Integer, Integer>>> getValidNeighboursWithCoords(int x, int y) {
-    return getValidNeighboursWithCoords(x, y, Direction.values());
+  public List<Character> getValidNeighbours(int x, int y) {
+    List<Character> r = new ArrayList<>();
+    for (var coords : getValidNeighbourCoordinates(x, y)) {
+      r.add(data[coords.getValue()][coords.getKey()]);
+    }
+    return r;
   }
 
   public List<Pair<Character, Pair<Integer, Integer>>> getValidNeighboursWithCoords(int x, int y, Direction... dirs) {
