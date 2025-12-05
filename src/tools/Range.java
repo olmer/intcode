@@ -1,6 +1,7 @@
 package tools;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,5 +63,28 @@ public class Range {
 
   public static boolean isFirstFullyWithinSecond(Pair<Long, Long> a, Pair<Long, Long> b) {
     return a.getKey() > b.getKey() && a.getValue() < b.getValue();
+  }
+
+  public static List<Pair<Long, Long>> mergeRanges(List<Pair<Long, Long>> ranges) {
+    if (ranges.isEmpty()) {
+      return new ArrayList<>();
+    }
+
+    ranges.sort(Comparator.comparingLong(Pair::getKey));
+    List<Pair<Long, Long>> merged = new ArrayList<>();
+    Pair<Long, Long> current = ranges.get(0);
+
+    for (int i = 1; i < ranges.size(); i++) {
+      Pair<Long, Long> next = ranges.get(i);
+      if (current.getValue() >= next.getKey() - 1) {
+        current = new Pair<>(current.getKey(), Math.max(current.getValue(), next.getValue()));
+      } else {
+        merged.add(current);
+        current = next;
+      }
+    }
+    merged.add(current);
+
+    return merged;
   }
 }
