@@ -78,22 +78,6 @@ public class Aoc2508 extends AbstractAoc {
     return pq.poll() * pq.poll() * pq.poll();
   }
 
-  static Integer[] findClosest(Integer[] dim, List<Integer[]> dimensions, Set<Integer[]> used) {
-    Integer[] closest = null;
-    long minDist = Long.MAX_VALUE;
-    for (Integer[] otherDim : dimensions) {
-      if (used.contains(otherDim) || otherDim == dim) {
-        continue;
-      }
-      long dist = distance(dim, otherDim);
-      if (dist < minDist) {
-        minDist = dist;
-        closest = otherDim;
-      }
-    }
-    return closest;
-  }
-
   static long distance(Integer[] dim1, Integer[] dim2) {
     long dist = 0;
     for (int i = 0; i < 3; i++) {

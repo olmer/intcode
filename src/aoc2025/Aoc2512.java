@@ -14,16 +14,6 @@ public class Aoc2512 extends AbstractAoc {
   }
 
   @Override
-  String getTestInput() {
-    return "";
-  }
-
-  @Override
-  String getRealInput() {
-    return "";
-  }
-
-  @Override
   long getTestExpected1() {
     return 0;
   }
@@ -31,5 +21,15 @@ public class Aoc2512 extends AbstractAoc {
   @Override
   long getTestExpected2() {
     return 0;
+  }
+
+  @Override
+  String getTestInput() {
+    return "";
+  }
+
+  @Override
+  String getRealInput() {
+    return "";
   }
 }
